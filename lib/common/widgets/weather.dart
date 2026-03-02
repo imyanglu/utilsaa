@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:music/api/service.dart';
+import 'package:music/common/models/api_response.dart';
 import 'package:music/common/models/index.dart';
 
 import 'package:music/common/provider/user_provider.dart';
@@ -12,15 +13,34 @@ class Weather extends HookConsumerWidget {
   initUserLocation(WidgetRef ref) async {
     final res = await getLocation();
     if (res.cityCode != null) {
-      ref.read(userProvider).update(UserField.cityCode, res.cityCode);
-      ref.read(userProvider).update(UserField.district, res.district);
+      ref.read(userProvider.notifier).update(UserField.district, res.district);
+      ref.read(userProvider.notifier).update(UserField.cityCode, res.cityCode);
+    }
+  }
+
+  Future<GDWeather?> initWeather(WidgetRef ref) async {
+    try {
+      final currentUser = ref.watch(userProvider);
+      final res = await getWeather(currentUser.cityCode!);
+      return res;
+    } catch (e) {
+      print("初始化天气出错$e");
     }
   }
 
   @override
   Widget build(BuildContext contex, WidgetRef ref) {
+    final weather = useState<GDWeather?>(null);
     final currentUser = ref.watch(userProvider);
+    useEffect(() {
+      print(currentUser);
+      if (currentUser.cityCode == null) return;
 
+      initWeather(ref).then((v) {
+        weather.value = v;
+        print(weather.value);
+      });
+    }, [currentUser]);
     return Container(
       width: double.infinity,
       height: 120,
@@ -37,14 +57,24 @@ class Weather extends HookConsumerWidget {
         ],
       ),
       child: currentUser?.cityCode != null
-          ? Text(currentUser.email ?? '未有效')
+          ? Container(
+              child: Column(
+                children: [
+                  Text(currentUser?.district ?? '未获取到具体城市'),
+                  Text('时间'),
+                ],
+              ),
+            )
           : Container(
               alignment: Alignment.center,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color(0xff007ACC),
                 ),
-                onPressed: initUserLocation,
+                onPressed: () {
+                  print("ress");
+                  initUserLocation(ref);
+                },
                 child: const Text(
                   style: TextStyle(color: Colors.white),
                   '获取城市信息',

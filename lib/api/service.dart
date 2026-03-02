@@ -1,9 +1,10 @@
 import 'package:music/api/http.dart';
 import 'package:html/parser.dart' as htmlParser;
+import 'package:music/common/models/api_response.dart';
 
 String extractDistrict(String address) {
   final parts = address.trim().split(RegExp(r'\s*·\s*|\s+'));
-  return parts.last; // 闽侯县
+  return parts[2]; // 默认为闽侯县
 }
 
 Future<String> getIpLocation() async {
@@ -14,12 +15,13 @@ Future<String> getIpLocation() async {
 
   final document = htmlParser.parse(res);
   final statsElements = document.querySelectorAll('.stats.ads p');
+
   String address = '';
   double lat = 0;
   double lon = 0;
   for (final el in statsElements) {
     final text = el.text.trim();
-
+    print(text);
     // 解析位置
     if (text.contains('位置信息')) {
       address = text.replaceAll('位置信息：', '').trim();
@@ -39,4 +41,14 @@ Future<String> getIpLocation() async {
   }
 
   return extractDistrict(address);
+}
+
+Future<GDWeather> getWeather(String cityCode) async {
+  final weather = await Http.get(
+    "https://restapi.amap.com/v3/weather/weatherInfo",
+    params: {'key': "a26fef3858f1cee8c09d24a01f2f79ff", 'city': cityCode},
+  );
+  final we = GDWeather.fromJson(weather);
+  print(we);
+  return GDWeather.fromJson(weather);
 }

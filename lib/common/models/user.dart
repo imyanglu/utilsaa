@@ -17,8 +17,15 @@ class User {
     return switch (field) {
       UserField.cityCode => copyWith(cityCode: value as String),
       UserField.email => copyWith(email: value as String),
-      UserField.district => copyWith(district: district as String),
+      UserField.district => copyWith(district: value as String),
     };
+  }
+
+  @override
+  String toString() {
+    return 'User{城市编码: $cityCode, 地址: $district}';
+    // 或者更简洁的格式
+    // return 'User(name: $name, age: $age)';
   }
 
   Map<String, dynamic> toJson() => {
