@@ -1,43 +1,44 @@
-enum UserField { cityCode, email, district }
+enum UserField { adCode, email, address }
 
 class User {
-  final String? cityCode;
+  final String? adCode;
   final String? email;
-  final String? district;
-  User({this.cityCode, this.email, this.district});
-  User copyWith({String? cityCode, String? email, String? district}) {
+
+  final List<String>? address;
+  User({this.adCode, this.email, this.address});
+  User copyWith({String? adCode, String? email, List<String>? address}) {
     return User(
-      cityCode: cityCode ?? this.cityCode,
+      adCode: adCode ?? this.adCode,
       email: email ?? this.email,
-      district: district ?? this.district,
+      address: address ?? this.address,
     );
   }
 
   User update(UserField field, dynamic value) {
     return switch (field) {
-      UserField.cityCode => copyWith(cityCode: value as String),
+      UserField.adCode => copyWith(adCode: value as String),
       UserField.email => copyWith(email: value as String),
-      UserField.district => copyWith(district: value as String),
+      UserField.address => copyWith(address: value as List<String>),
     };
   }
 
   @override
   String toString() {
-    return 'User{城市编码: $cityCode, 地址: $district}';
+    return 'User{城市编码: $adCode, 地址: $address}';
     // 或者更简洁的格式
     // return 'User(name: $name, age: $age)';
   }
 
   Map<String, dynamic> toJson() => {
-    'cityCode': cityCode,
+    'adCode': adCode,
     'email': email,
-    'district': district,
+    'address': address,
   };
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      cityCode: json['cityCode'],
+      adCode: json['adCode'],
       email: json['email'],
-      district: json['district'],
+      address: json['address'],
     );
   }
 }

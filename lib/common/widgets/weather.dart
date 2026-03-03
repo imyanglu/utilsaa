@@ -8,20 +8,39 @@ import 'package:music/common/models/index.dart';
 
 import 'package:music/common/provider/user_provider.dart';
 import 'package:music/common/utils/help.dart';
+import 'package:music/common/widgets/addressPicker.dart';
 
 class Weather extends HookConsumerWidget {
-  initUserLocation(WidgetRef ref) async {
-    final res = await getLocation();
-    if (res.cityCode != null) {
-      ref.read(userProvider.notifier).update(UserField.district, res.district);
-      ref.read(userProvider.notifier).update(UserField.cityCode, res.cityCode);
-    }
+  initUserLocation(BuildContext context, WidgetRef ref) async {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black.withOpacity(0.5),
+      builder: (context) => Container(
+        height: 300,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+        ),
+        child: Addresspicker(),
+      ),
+    );
+    // try {
+    //   final res = await getLocation();
+    //   print(res);
+    //   if (res.adCode != null) {
+    //     ref.read(userProvider.notifier).update(UserField.address, res.address);
+    //     ref.read(userProvider.notifier).update(UserField.adCode, res.adCode);
+    //   }
+    // } catch (e) {
+    //   print("报错$e");
+    // }
   }
 
   Future<GDWeather?> initWeather(WidgetRef ref) async {
     try {
       final currentUser = ref.watch(userProvider);
-      final res = await getWeather(currentUser.cityCode!);
+      final res = await getWeather(currentUser.adCode!);
       return res;
     } catch (e) {
       print("初始化天气出错$e");
@@ -29,12 +48,12 @@ class Weather extends HookConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext contex, WidgetRef ref) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final weather = useState<GDWeather?>(null);
     final currentUser = ref.watch(userProvider);
     useEffect(() {
       print(currentUser);
-      if (currentUser.cityCode == null) return;
+      if (currentUser.adCode == null) return;
 
       initWeather(ref).then((v) {
         weather.value = v;
@@ -56,15 +75,8 @@ class Weather extends HookConsumerWidget {
           ),
         ],
       ),
-      child: currentUser?.cityCode != null
-          ? Container(
-              child: Column(
-                children: [
-                  Text(currentUser?.district ?? '未获取到具体城市'),
-                  Text('时间'),
-                ],
-              ),
-            )
+      child: currentUser?.adCode != null
+          ? Container(child: Column(children: [Text('未获取到具体城市'), Text('时间')]))
           : Container(
               alignment: Alignment.center,
               child: ElevatedButton(
@@ -72,8 +84,7 @@ class Weather extends HookConsumerWidget {
                   backgroundColor: Color(0xff007ACC),
                 ),
                 onPressed: () {
-                  print("ress");
-                  initUserLocation(ref);
+                  initUserLocation(context, ref);
                 },
                 child: const Text(
                   style: TextStyle(color: Colors.white),
