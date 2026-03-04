@@ -11,6 +11,7 @@ class UserNotifier extends StateNotifier<User> {
 
   static User _initUser() {
     final map = Storage.getMap('user');
+
     if (map != null) {
       return User.fromJson(map);
     }

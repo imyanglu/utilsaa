@@ -4,9 +4,9 @@ class User {
   final String? adCode;
   final String? email;
 
-  final List<String>? address;
+  final Map<String, dynamic>? address;
   User({this.adCode, this.email, this.address});
-  User copyWith({String? adCode, String? email, List<String>? address}) {
+  User copyWith({String? adCode, String? email, Map<String, String>? address}) {
     return User(
       adCode: adCode ?? this.adCode,
       email: email ?? this.email,
@@ -18,7 +18,7 @@ class User {
     return switch (field) {
       UserField.adCode => copyWith(adCode: value as String),
       UserField.email => copyWith(email: value as String),
-      UserField.address => copyWith(address: value as List<String>),
+      UserField.address => copyWith(address: value as Map<String, String>?),
     };
   }
 
@@ -35,6 +35,7 @@ class User {
     'address': address,
   };
   factory User.fromJson(Map<String, dynamic> json) {
+    Map<String, dynamic> dynamicMap = json['address'];
     return User(
       adCode: json['adCode'],
       email: json['email'],

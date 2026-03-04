@@ -7,6 +7,19 @@ Future<Map<String, dynamic>> loadCityCode() async {
   return jsonDecode(str);
 }
 
+String getWindPowerEmoj(double power) {
+  if (power < 3) {
+    return "🍃";
+  } else if (power < 6) {
+    return "🌬️";
+  } else if (power < 9) {
+    return "💨";
+  } else if (power < 12) {
+    return '🌀';
+  }
+  return '🌪️';
+}
+
 Future<({String? adCode, List<String>? address})> getLocation() async {
   final address = await getIpLocation();
 

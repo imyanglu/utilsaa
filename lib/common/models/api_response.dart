@@ -1,4 +1,5 @@
 import 'package:isar/isar.dart';
+import 'package:music/common/utils/help.dart';
 
 class LiveWeather {
   final String province; // 省份
@@ -23,11 +24,12 @@ class LiveWeather {
     required this.winddirection,
   });
   factory LiveWeather.fromJson(Map<String, dynamic> json) {
+    RegExp regExp = RegExp(r'\d+');
     return LiveWeather(
       reporttime: json['reporttime'],
       temperature_float: float.parse(json['temperature_float']),
       humidity: json['humidity'],
-      windpower: double.parse(json['temperature']),
+      windpower: double.parse(regExp.firstMatch(json['windpower'])?[0] ?? '0'),
       province: json['province'],
       city: json['city'],
       weather: json['weather'],
@@ -57,7 +59,7 @@ class GDWeather {
 
   factory GDWeather.fromJson(Map<String, dynamic> json) {
     var list = json['lives'] as List? ?? [];
-    print("XXXX $json");
+
     return GDWeather(
       status: json['status'],
       lives: list.map((i) => LiveWeather.fromJson(i)).toList(),
@@ -66,6 +68,17 @@ class GDWeather {
   @override
   String toString() {
     return 'GDWeather{status: $status, 长度 ${lives.length} lives: $lives}';
+  }
+
+  String getSimpleWeather() {
+    if (status == '0') return '获取失败';
+    final live = lives.first;
+    return " " +
+        live.weather +
+        ' 风力 ' +
+        live.windpower.toString() +
+        ' ' +
+        getWindPowerEmoj(live.windpower);
   }
 
   Map<String, dynamic> toJson() {

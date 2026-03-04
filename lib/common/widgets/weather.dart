@@ -17,24 +17,33 @@ class Weather extends HookConsumerWidget {
       backgroundColor: Colors.transparent,
       barrierColor: Colors.black.withOpacity(0.5),
       builder: (context) => Container(
-        height: 300,
+        height: 400,
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
         ),
-        child: Addresspicker(),
+        child: Addresspicker(
+          onCancel: () {
+            Navigator.pop(context);
+          },
+          onConfirm: (address, adCode) {
+            Navigator.pop(context);
+            ref.read(userProvider.notifier).update(UserField.address, address);
+            ref.read(userProvider.notifier).update(UserField.adCode, adCode);
+          },
+        ),
       ),
     );
-    // try {
-    //   final res = await getLocation();
-    //   print(res);
-    //   if (res.adCode != null) {
-    //     ref.read(userProvider.notifier).update(UserField.address, res.address);
-    //     ref.read(userProvider.notifier).update(UserField.adCode, res.adCode);
-    //   }
-    // } catch (e) {
-    //   print("报错$e");
-    // }
+    try {
+      final res = await getLocation();
+      print(res);
+      if (res.adCode != null) {
+        ref.read(userProvider.notifier).update(UserField.address, res.address);
+        ref.read(userProvider.notifier).update(UserField.adCode, res.adCode);
+      }
+    } catch (e) {
+      print("报错$e");
+    }
   }
 
   Future<GDWeather?> initWeather(WidgetRef ref) async {
@@ -51,47 +60,48 @@ class Weather extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final weather = useState<GDWeather?>(null);
     final currentUser = ref.watch(userProvider);
+    print(currentUser);
     useEffect(() {
       print(currentUser);
       if (currentUser.adCode == null) return;
 
       initWeather(ref).then((v) {
         weather.value = v;
-        print(weather.value);
       });
     }, [currentUser]);
-    return Container(
-      width: double.infinity,
-      height: 120,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(12),
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1), // 阴影颜色
-            blurRadius: 8, // 模糊程度
-            spreadRadius: 2, // 扩散范围
-            offset: Offset(0, 4), // x, y 偏移
-          ),
-        ],
-      ),
-      child: currentUser?.adCode != null
-          ? Container(child: Column(children: [Text('未获取到具体城市'), Text('时间')]))
-          : Container(
-              alignment: Alignment.center,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xff007ACC),
+    return currentUser?.adCode != null
+        ? Container(
+            child: Row(
+              children: [
+                Text(
+                  currentUser.address?['district'] ??
+                      currentUser.address?['city'] ??
+                      currentUser.address?['province'] ??
+                      '未知',
                 ),
-                onPressed: () {
-                  initUserLocation(context, ref);
-                },
-                child: const Text(
-                  style: TextStyle(color: Colors.white),
-                  '获取城市信息',
+                Text(":"),
+                Text(
+                  weather.value == null
+                      ? '天气查询中🔍'
+                      : weather.value!.getSimpleWeather(),
                 ),
+              ],
+            ),
+          )
+        : Container(
+            alignment: Alignment.center,
+            child: ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xff6B9D4F),
+              ),
+              onPressed: () {
+                initUserLocation(context, ref);
+              },
+              child: const Text(
+                style: TextStyle(color: Colors.white),
+                '获取城市信息',
               ),
             ),
-    );
+          );
   }
 }
