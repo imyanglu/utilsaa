@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:music/common/data/theme.dart';
 import 'package:music/common/widgets/weather.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
     // TODO: implement build
     return Scaffold(
       backgroundColor: Colors.white,
       body: Container(
+        width: screenWidth, //
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -17,9 +20,14 @@ class HomePage extends StatelessWidget {
           ),
         ),
         child: SafeArea(
+          maintainBottomViewPadding: false,
           child: Padding(
             padding: EdgeInsetsGeometry.all(12),
-            child: Column(children: [Weather()]),
+            child: Column(
+              children: [
+                Row(children: [Weather()]),
+              ],
+            ),
           ),
         ),
       ),

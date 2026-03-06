@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:music/api/service.dart';
+import 'package:music/common/data/theme.dart';
 import 'package:music/common/models/api_response.dart';
 import 'package:music/common/models/index.dart';
 
@@ -46,10 +47,18 @@ class Weather extends HookConsumerWidget {
     }
   }
 
-  Future<GDWeather?> initWeather(WidgetRef ref) async {
+  Future<GDForecastWeather?> initForrcastWeather(String adCode) async {
     try {
-      final currentUser = ref.watch(userProvider);
-      final res = await getWeather(currentUser.adCode!);
+      final res = await getForecastWeather(adCode);
+      return res;
+    } catch (e) {
+      print("初始化天气出错$e");
+    }
+  }
+
+  Future<GDWeather?> initLiveWeather(String adCode) async {
+    try {
+      final res = await getWeather(adCode);
       return res;
     } catch (e) {
       print("初始化天气出错$e");
@@ -58,50 +67,64 @@ class Weather extends HookConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final weather = useState<GDWeather?>(null);
+    final weather = useState<LiveWeather?>(null);
+    final forecastWeather = useState<Cast?>(null);
     final currentUser = ref.watch(userProvider);
     print(currentUser);
     useEffect(() {
       print(currentUser);
       if (currentUser.adCode == null) return;
 
-      initWeather(ref).then((v) {
-        weather.value = v;
+      initLiveWeather(currentUser.adCode!).then((v) {
+        weather.value = v?.getLiveWeather();
+      });
+      initForrcastWeather(currentUser.adCode!).then((v) {
+        forecastWeather.value = v?.forecast.casts[0];
       });
     }, [currentUser]);
-    return currentUser?.adCode != null
-        ? Container(
-            child: Row(
-              children: [
-                Text(
+    return Container(
+      child: currentUser?.adCode != null
+          ? TimeBasedWeatherCard(
+              daytemperature: forecastWeather.value != null
+                  ? forecastWeather.value!.daytemp
+                  : '',
+              nighttemperature: forecastWeather.value != null
+                  ? forecastWeather.value!.nighttemp
+                  : '',
+              weather: weather.value != null ? weather.value!.weather : '',
+              temperature: weather.value != null
+                  ? (weather.value!.temperature).toString() + '°'
+                  : '',
+              dayweather: forecastWeather.value != null
+                  ? forecastWeather.value!.dayweather
+                  : '',
+              nightweather: forecastWeather.value != null
+                  ? forecastWeather.value!.nightweather
+                  : '',
+              location:
                   currentUser.address?['district'] ??
-                      currentUser.address?['city'] ??
-                      currentUser.address?['province'] ??
-                      '未知',
+                  currentUser.address?['city'] ??
+                  currentUser.address?['province'] ??
+                  '未知',
+              reporttime: weather.value != null
+                  ? weather.value!.reporttime!
+                  : '',
+            )
+          : Container(
+              alignment: Alignment.center,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Color(0xff6B9D4F),
                 ),
-                Text(":"),
-                Text(
-                  weather.value == null
-                      ? '天气查询中🔍'
-                      : weather.value!.getSimpleWeather(),
+                onPressed: () {
+                  initUserLocation(context, ref);
+                },
+                child: const Text(
+                  style: TextStyle(color: Colors.white),
+                  '获取城市信息',
                 ),
-              ],
-            ),
-          )
-        : Container(
-            alignment: Alignment.center,
-            child: ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Color(0xff6B9D4F),
-              ),
-              onPressed: () {
-                initUserLocation(context, ref);
-              },
-              child: const Text(
-                style: TextStyle(color: Colors.white),
-                '获取城市信息',
               ),
             ),
-          );
+    );
   }
 }

@@ -48,6 +48,20 @@ Future<GDWeather> getWeather(String adCode) async {
     params: {'key': "a26fef3858f1cee8c09d24a01f2f79ff", 'city': adCode},
   );
   final we = GDWeather.fromJson(weather);
-  print(we);
+
   return GDWeather.fromJson(weather);
+}
+
+Future<GDForecastWeather> getForecastWeather(String adCode) async {
+  final weather = await Http.get(
+    "https://restapi.amap.com/v3/weather/weatherInfo",
+    params: {
+      'key': "a26fef3858f1cee8c09d24a01f2f79ff",
+      'city': adCode,
+      'extensions': 'all',
+    },
+  );
+  final we = GDForecastWeather.fromJson(weather);
+  print(we);
+  return we;
 }

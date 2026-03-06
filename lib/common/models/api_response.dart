@@ -52,6 +52,71 @@ class LiveWeather {
   }
 }
 
+class Cast {
+  final String week; // 城市
+  final String dayweather;
+  final String nightweather;
+  final String daytemp;
+  final String nighttemp;
+  final String daywind;
+  final String daypower;
+  final String nightwind;
+  final String nightpower;
+  Cast({
+    required this.week,
+    required this.dayweather,
+    required this.nightweather,
+    required this.daytemp,
+    required this.nighttemp,
+    required this.daywind,
+    required this.daypower,
+    required this.nightwind,
+    required this.nightpower,
+  });
+  factory Cast.fromJson(Map<String, dynamic> json) {
+    return Cast(
+      week: json['week'],
+      dayweather: json['dayweather'],
+      nightweather: json['nightweather'],
+      daytemp: json['daytemp'],
+      nighttemp: json['nighttemp'],
+      daywind: json['daywind'],
+      daypower: json['daypower'],
+      nightwind: json['nightwind'],
+      nightpower: json['nightpower'],
+    );
+  }
+}
+
+class ForecastWeather {
+  final String reporttime; // 城市
+  final List<Cast> casts;
+  ForecastWeather(this.reporttime, this.casts);
+  factory ForecastWeather.fromJson(Map<String, dynamic> json) {
+    var list = json['casts'] as List? ?? [];
+    return ForecastWeather(
+      json['reporttime'],
+      list.map((i) => Cast.fromJson(i)).toList(),
+    );
+  }
+  Cast getTodayWeather() {
+    return casts[0];
+  }
+}
+
+class GDForecastWeather {
+  final String status; //0 失败,1 成功
+  final ForecastWeather forecast;
+  GDForecastWeather({required this.status, required this.forecast});
+
+  factory GDForecastWeather.fromJson(Map<String, dynamic> json) {
+    return GDForecastWeather(
+      status: json['status'],
+      forecast: ForecastWeather.fromJson(json['forecasts'][0]),
+    );
+  }
+}
+
 class GDWeather {
   final String status; //0 失败,1 成功
   final List<LiveWeather> lives;
@@ -65,20 +130,23 @@ class GDWeather {
       lives: list.map((i) => LiveWeather.fromJson(i)).toList(),
     );
   }
+  String getTemperature() {
+    if (lives.isEmpty) return '';
+    return '${lives[0].temperature_float}°';
+  }
+
+  LiveWeather getLiveWeather() {
+    return lives[0];
+  }
+
+  String getWeather() {
+    if (lives.isEmpty) return '';
+    return lives[0].weather;
+  }
+
   @override
   String toString() {
     return 'GDWeather{status: $status, 长度 ${lives.length} lives: $lives}';
-  }
-
-  String getSimpleWeather() {
-    if (status == '0') return '获取失败';
-    final live = lives.first;
-    return " " +
-        live.weather +
-        ' 风力 ' +
-        live.windpower.toString() +
-        ' ' +
-        getWindPowerEmoj(live.windpower);
   }
 
   Map<String, dynamic> toJson() {
