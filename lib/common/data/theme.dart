@@ -166,8 +166,8 @@ class TimeBasedWeatherCard extends HookWidget {
     return Stack(
       children: [
         Container(
-          width: 170,
-          height: 170,
+          width: 175,
+          height: 175,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(35),
             gradient: _getGradient(period.value!),
