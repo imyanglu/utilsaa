@@ -134,19 +134,20 @@ class TimeBasedWeatherCard extends HookWidget {
   }) : super(key: key);
 
   _getPeriodByHour(int hour) {
-    if (hour >= 4 && hour < 9) {
-      return TimePeriod.morning;
-    } else if (hour >= 9 && hour < 14) {
-      return TimePeriod.noon;
-    } else if (hour >= 14 && hour < 17) {
-      return TimePeriod.afternoon;
-    } else if (hour >= 17 && hour < 19) {
-      return TimePeriod.dusk;
-    } else if (hour >= 19 && hour < 22) {
-      return TimePeriod.night;
-    } else {
-      return TimePeriod.midnight;
-    }
+    return TimePeriod.noon;
+    // if (hour >= 4 && hour < 9) {
+    //   return TimePeriod.morning;
+    // } else if (hour >= 9 && hour < 14) {
+    //   return TimePeriod.noon;
+    // } else if (hour >= 14 && hour < 17) {
+    //   return TimePeriod.afternoon;
+    // } else if (hour >= 17 && hour < 19) {
+    //   return TimePeriod.dusk;
+    // } else if (hour >= 19 && hour < 22) {
+    //   return TimePeriod.night;
+    // } else {
+    //   return TimePeriod.midnight;
+    // }
   }
 
   _initPeriod() {
@@ -161,176 +162,163 @@ class TimeBasedWeatherCard extends HookWidget {
     useEffect(() {
       period.value = _initPeriod();
     }, []);
+    double screenWidth = MediaQuery.of(context).size.width;
     if (period.value == null)
-      return Container(width: 170, height: 190, child: Text(""));
-    return Stack(
-      children: [
-        Container(
-          width: 175,
-          height: 175,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(35),
-            gradient: _getGradient(period.value!),
-            boxShadow: [
-              BoxShadow(
-                color: _getShadowColor(period.value!),
-                blurRadius: 20,
-                offset: Offset(0, 10),
-              ),
-            ],
-            border: Border.all(
-              color: Colors.white.withOpacity(0.5),
-              width: 1.5,
-            ),
-          ),
-          clipBehavior: Clip.antiAlias,
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-            child: Padding(
-              padding: EdgeInsets.all(15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // 时间段图标
-                  Row(
-                    children: [
-                      Icon(
-                        weatherIconMap[weather]?['icon'],
-                        color: weatherIconMap[weather]?['color'],
-                        size: 40,
-                      ),
-                      const Spacer(),
-                      Column(
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                              left: 8,
-                              right: 8,
-                              top: 2,
-                              bottom: 2,
-                            ),
-                            width: 70,
-                            decoration: BoxDecoration(
-                              // color: Colors.white,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              '${daytemperature ?? ''}°${dayweather ?? ''}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          SizedBox(height: 2),
-                          Container(
-                            width: 70,
-                            padding: EdgeInsets.only(
-                              left: 8,
-                              right: 8,
-                              top: 2,
-                              bottom: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              // color: Colors.black,
-                              borderRadius: BorderRadius.circular(4),
-                            ),
-                            child: Text(
-                              '${nighttemperature ?? ''}°${nightweather ?? ''}',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+      return Container(width: screenWidth - 24, height: 190, child: Text("xx"));
 
+    return Container(
+      height: 175,
+      width: screenWidth - 24,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(35),
+        gradient: _getGradient(period.value!),
+        boxShadow: [
+          BoxShadow(
+            color: _getShadowColor(period.value!),
+            blurRadius: 20,
+            offset: Offset(0, 10),
+          ),
+        ],
+        border: Border.all(color: Colors.white.withOpacity(0.5), width: 1.5),
+      ),
+      clipBehavior: Clip.antiAlias,
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // 时间段图标
+              Row(
+                children: [
+                  Icon(
+                    weatherIconMap[weather]?['icon'],
+                    color: weatherIconMap[weather]?['color'],
+                    size: 40,
+                  ),
+                  const Spacer(),
                   Row(
                     children: [
-                      Text(
-                        temperature,
-                        style: TextStyle(
-                          fontSize: 42,
-                          fontWeight: FontWeight.w600,
-                          color: _getTextColor(period.value!),
-                          shadows: period.value! == TimePeriod.midnight
-                              ? [
-                                  Shadow(
-                                    color: Colors.white.withOpacity(0.1),
-                                    blurRadius: 8,
-                                  ),
-                                ]
-                              : null,
+                      Container(
+                        padding: EdgeInsets.only(
+                          left: 8,
+                          right: 8,
+                          top: 2,
+                          bottom: 2,
+                        ),
+                        width: 70,
+                        decoration: BoxDecoration(
+                          // color: Colors.white,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '${daytemperature ?? ''}°${dayweather ?? ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12),
                         ),
                       ),
-                      SizedBox(width: 4),
-                      Flexible(
-                        child: Container(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 3,
-                          ),
-                          decoration: BoxDecoration(
-                            color: _getAccentColor(
-                              period.value!,
-                            ).withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: _getAccentColor(
-                                period.value!,
-                              ).withOpacity(0.3),
-                              width: 0.5,
-                            ),
-                          ),
-                          child: Text(
-                            weather,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: 10,
-                              color: _getTextColor(period.value!),
-                            ),
-                          ),
+
+                      Container(
+                        width: 70,
+                        padding: EdgeInsets.only(
+                          left: 8,
+                          right: 8,
+                          top: 2,
+                          bottom: 2,
+                        ),
+                        decoration: BoxDecoration(
+                          // color: Colors.black,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          '${nighttemperature ?? ''}°${nightweather ?? ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12, color: Colors.white),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 4),
-                  // 地点和天气
+                ],
+              ),
+
+              Row(
+                children: [
                   Text(
-                    location,
+                    temperature,
                     style: TextStyle(
-                      fontSize: 11,
-                      color: _getTextColor(period.value!).withOpacity(0.8),
+                      fontSize: 42,
+                      fontWeight: FontWeight.w600,
+                      color: _getTextColor(period.value!),
+                      shadows: period.value! == TimePeriod.midnight
+                          ? [
+                              Shadow(
+                                color: Colors.white.withOpacity(0.1),
+                                blurRadius: 8,
+                              ),
+                            ]
+                          : null,
                     ),
                   ),
-                  // 时间段文字
-                  Text(
-                    '时间:$reporttime',
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: _getTextColor(period.value!).withOpacity(0.6),
-                      letterSpacing: 0.5,
+                  SizedBox(width: 4),
+                  Flexible(
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      decoration: BoxDecoration(
+                        color: _getAccentColor(period.value!).withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(
+                          color: _getAccentColor(
+                            period.value!,
+                          ).withOpacity(0.3),
+                          width: 0.5,
+                        ),
+                      ),
+                      child: Text(
+                        weather,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 10,
+                          color: _getTextColor(period.value!),
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
+              SizedBox(height: 4),
+              // 地点和天气
+              Text(
+                location,
+                style: TextStyle(
+                  fontSize: 11,
+                  color: _getTextColor(period.value!).withOpacity(0.8),
+                ),
+              ),
+              // 时间段文字
+              Text(
+                '时间:$reporttime',
+                style: TextStyle(
+                  fontSize: 9,
+                  color: _getTextColor(period.value!).withOpacity(0.6),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
           ),
         ),
-        // Positioned(
-        //   top: 10,
-        //   right: 16,
-        //   child: GestureDetector(
-        //     child: Icon(Icons.refresh, color: Colors.white, size: 16),
-        //   ),
-        // ),
-      ],
+      ),
     );
+    // Positioned(
+    //   top: 10,
+    //   right: 16,
+    //   child: GestureDetector(
+    //     child: Icon(Icons.refresh, color: Colors.white, size: 16),
+    //   ),
+    // ),
   }
 
   LinearGradient _getGradient(TimePeriod period) {
