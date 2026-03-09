@@ -5,7 +5,7 @@ class Input extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 64,
+      height: 60,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
       child: TextField(
         decoration: InputDecoration(
