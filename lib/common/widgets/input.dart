@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 
 class Input extends HookWidget {
+  final TextEditingController? controller;
+  Input({this.controller});
   @override
   Widget build(BuildContext context) {
     return Container(
       height: 60,
       decoration: BoxDecoration(borderRadius: BorderRadius.circular(24)),
       child: TextField(
+        controller: controller,
         decoration: InputDecoration(
           border: InputBorder.none,
 

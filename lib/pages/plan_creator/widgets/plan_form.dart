@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:music/common/data/const.dart';
 import 'package:music/common/widgets/input.dart';
 import 'package:music/common/widgets/selector.dart';
+import 'package:music/pages/plan_creator/hooks/use_plan_data.dart';
+import 'package:music/pages/plan_creator/widgets/plan_date_picker.dart';
 
 class PlanForm extends HookWidget {
   @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
+    final (:date, :nameTextController, :changeDate) = usePlanForm();
     return Container(
       padding: const EdgeInsets.only(left: 16, right: 16, top: 12, bottom: 8),
       margin: EdgeInsets.all(12),
@@ -30,36 +34,11 @@ class PlanForm extends HookWidget {
               ],
             ),
             SizedBox(height: 12),
-            Input(),
+            Input(controller: nameTextController),
+
             SizedBox(height: 16),
-            Row(
-              children: [
-                Text("📚", style: TextStyle(fontSize: 16)),
-                SizedBox(width: 4),
-                Text(
-                  "类型",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xff4F5F73),
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 12),
-            Selector(
-              trigger: Container(
-                alignment: Alignment.center,
-                padding: const EdgeInsets.all(12),
-                width: screenWidth - 32,
-                height: 60,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(30),
-                  border: Border.all(color: Color(0xffE2EAF3), width: 1),
-                ),
-                child: Text("hello", style: TextStyle(fontSize: 16)),
-              ),
-            ),
+            PlanDatePicker(date: date, onDateChanged: changeDate),
+
             SizedBox(height: 16),
           ],
         ),
