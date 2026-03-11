@@ -5,10 +5,21 @@ dateTimeFormat(DateTime date) {
   return '${date.year.toString()}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
 }
 
+timeFormat(TimeOfDay time) {
+  return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+}
+
 class PlanDatePicker extends HookWidget {
   final DateTime? date;
+  final TimeOfDay time;
   final Function(DateTime? date)? onDateChanged;
-  PlanDatePicker({this.date, this.onDateChanged});
+  final Function(TimeOfDay time)? onTimeChanged;
+  PlanDatePicker({
+    this.date,
+    this.onDateChanged,
+    required this.time,
+    this.onTimeChanged,
+  });
   @override
   Widget build(BuildContext context) {
     final isLoading = useState(false);
@@ -109,11 +120,11 @@ class PlanDatePicker extends HookWidget {
                   if (isLoading.value) return;
                   isLoading.value = true;
                   try {
-                    final date = await showTimePicker(
+                    final time = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.now(),
                     );
-                    // if (date != null) onDateChanged?.call(date);
+                    if (date != null) onTimeChanged?.call(time!);
                   } catch (e) {
                     print(e);
                   } finally {
@@ -131,11 +142,8 @@ class PlanDatePicker extends HookWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                        date != null ? dateTimeFormat(date!) : "选择时间",
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: date == null ? Colors.grey : Colors.black87,
-                        ),
+                        timeFormat(time),
+                        style: TextStyle(fontSize: 16, color: Colors.black87),
                       ),
                       Icon(Icons.access_time, size: 24),
                     ],

@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:music/common/models/common_enum.dart';
+import 'package:music/common/models/label_type.dart';
+import 'package:music/common/models/plan_creator.dart';
 
-({
-  TextEditingController? nameTextController,
-  DateTime? date,
-  Function(DateTime?) changeDate,
-})
+({PlanCreator plan_data, Function(PlanCreator newPlan) updatePlan})
 usePlanForm() {
-  final name = useTextEditingController();
-  final date = useState<DateTime?>(null);
-  return (
-    nameTextController: name,
-    date: date.value,
-    changeDate: (d) => date.value = d,
+  final planData = useState(
+    PlanCreator(
+      name: useTextEditingController(),
+      time: TimeOfDay(hour: 6, minute: 0),
+      label: PlanLabel.personal,
+      interval: IntervalEnum.none,
+      intervalHour: 8,
+    ),
   );
+  // 定义 update 方法
+  void updatePlan(PlanCreator newPlan) {
+    planData.value = newPlan;
+  }
+
+  return (plan_data: planData.value, updatePlan: updatePlan);
 }

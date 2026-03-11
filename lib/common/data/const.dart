@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:music/common/models/label_type.dart';
 import 'package:music/common/models/plan_type.dart';
 
 List<PlanType> planTypes = [
@@ -27,4 +25,5 @@ final planColors = [
   Color(0xff2B8C5E),
   Color(0xffF19B6A),
   Color(0xff8A6DE9),
+  Color(0xffB62C1B),
 ];

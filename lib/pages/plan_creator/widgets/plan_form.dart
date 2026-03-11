@@ -1,21 +1,23 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/data/const.dart';
+import 'package:music/common/models/common_enum.dart';
 import 'package:music/common/widgets/input.dart';
-import 'package:music/common/widgets/selector.dart';
 import 'package:music/pages/plan_creator/hooks/use_plan_data.dart';
+import 'package:music/pages/plan_creator/services/plan_service.dart';
 import 'package:music/pages/plan_creator/widgets/color_selector.dart';
 import 'package:music/pages/plan_creator/widgets/interval_selector.dart';
 import 'package:music/pages/plan_creator/widgets/label_selector.dart';
 import 'package:music/pages/plan_creator/widgets/plan_date_picker.dart';
 import 'package:music/pages/plan_creator/widgets/plan_remark.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/tap_bounce_container.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class PlanForm extends HookWidget {
+  const PlanForm({super.key});
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-    final (:date, :nameTextController, :changeDate) = usePlanForm();
+    final (:plan_data, :updatePlan) = usePlanForm();
     return Expanded(
       child: Column(
         children: [
@@ -48,18 +50,51 @@ class PlanForm extends HookWidget {
                         ],
                       ),
                       SizedBox(height: 8),
-                      Input(controller: nameTextController),
+                      Input(controller: plan_data.name),
 
                       SizedBox(height: 12),
-                      PlanDatePicker(date: date, onDateChanged: changeDate),
+                      PlanDatePicker(
+                        time: plan_data.time,
+                        date: plan_data.date,
+                        onTimeChanged: (time) {
+                          updatePlan(plan_data.copyWith(time: time));
+                        },
+                        onDateChanged: (n) {
+                          updatePlan(plan_data.copyWith(date: n));
+                        },
+                      ),
                       SizedBox(height: 12),
-                      LabelSelector(),
+                      LabelSelector(
+                        label: plan_data.label,
+                        onLabelChanged: (l) {
+                          updatePlan(plan_data.copyWith(label: l));
+                        },
+                      ),
                       SizedBox(height: 12),
-                      ColorSelector(),
+                      ColorSelector(
+                        color: plan_data.color,
+                        onColorChange: (c) {
+                          updatePlan(plan_data.copyWith(color: c));
+                        },
+                      ),
                       SizedBox(height: 12),
-                      IntervalSelector(),
+                      IntervalSelector(
+                        interval: plan_data.interval,
+                        hour: plan_data.intervalHour,
+                        onIntervalChanged: (i, d) {
+                          updatePlan(
+                            plan_data.copyWith(
+                              interval: i,
+                              intervalHour: (i == IntervalEnum.other)
+                                  ? d
+                                  : plan_data.intervalHour,
+                            ),
+                          );
+                        },
+                      ),
                       SizedBox(height: 12),
                       PlanRemark(remark: "", remarkTitle: ""),
+                      SizedBox(height: 160),
                     ],
                   ),
                 ),
@@ -81,6 +116,21 @@ class PlanForm extends HookWidget {
                 Expanded(
                   flex: 2,
                   child: GestureDetector(
+                    onTap: () async {
+                      final planService = PlanService();
+                      try {
+                        planService.savePlan(plan_data);
+                      } catch (e) {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          const CustomSnackBar.info(
+                            message:
+                                'There is some information. You need to do something with that',
+                          ),
+                        );
+                        print(e.toString());
+                      }
+                    },
                     child: Container(
                       height: 48,
                       alignment: Alignment.center,

@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:music/common/data/const.dart';
-import 'package:music/common/models/label_type.dart';
 
 class ColorSelector extends HookWidget {
+  final Color? color;
+  final Function(Color) onColorChange;
+  ColorSelector({this.color, required this.onColorChange});
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -25,19 +27,26 @@ class ColorSelector extends HookWidget {
         SizedBox(height: 8),
         Row(
           spacing: 8,
-          children: planColors
-              .map(
-                (l) => Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    color: l,
-                    border: BoxBorder.all(color: Color(0xffF2F5F9)),
-                    borderRadius: BorderRadius.circular(24),
+          children: planColors.map((l) {
+            bool selected = l == color;
+            return GestureDetector(
+              onTap: () => onColorChange(l),
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 200),
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: l,
+                  border: BoxBorder.all(
+                    color: selected ? Colors.black87 : l,
+                    width: 2,
                   ),
+
+                  borderRadius: BorderRadius.circular(24),
                 ),
-              )
-              .toList(),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );

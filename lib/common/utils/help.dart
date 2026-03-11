@@ -20,6 +20,13 @@ String getWindPowerEmoj(double power) {
   return '🌪️';
 }
 
+bool isPositiveNumber(String input) {
+  // 先尝试解析为数字
+  final number = num.tryParse(input);
+  // 如果不是数字或者 <= 0，返回 false
+  return number != null && number > 0;
+}
+
 Future<({String? adCode, List<String>? address})> getLocation() async {
   final address = await getIpLocation();
 

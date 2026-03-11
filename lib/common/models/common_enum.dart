@@ -1,5 +1,5 @@
 enum IntervalEnum {
-  norepeat(label: '不重复'),
+  none(label: '不重复'),
   weekly(label: '每周'),
   monthly(label: '每月'),
   daily(label: '每天'),
