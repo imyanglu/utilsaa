@@ -109,21 +109,11 @@ class PlanDatePicker extends HookWidget {
                   if (isLoading.value) return;
                   isLoading.value = true;
                   try {
-                    final date = await showDatePicker(
-                      locale: const Locale('zh', 'CH'),
-                      // 还可以自定义按钮文字
-                      confirmText: "确定",
-                      cancelText: "取消",
-                      helpText: "选择日期",
+                    final date = await showTimePicker(
                       context: context,
-                      initialDate: DateTime.now(), // 默认选中日期
-                      firstDate: DateTime(2000), // 可选的最早日期
-                      lastDate: DateTime(2100), // 可选的最晚日期
-                      onDatePickerModeChange: (value) {
-                        print(value);
-                      },
+                      initialTime: TimeOfDay.now(),
                     );
-                    if (date != null) onDateChanged?.call(date);
+                    // if (date != null) onDateChanged?.call(date);
                   } catch (e) {
                     print(e);
                   } finally {
