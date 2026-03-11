@@ -122,10 +122,11 @@ class PlanForm extends HookWidget {
                       try {
                         await planService.savePlan(plan_data);
                       } catch (e) {
-                        String error = e.toString();
+                        String error = e.toString().split(': ').last;
+
                         showTopSnackBar(
                           Overlay.of(context),
-                          CustomSnackBar.info(message: error),
+                          CustomSnackBar.error(message: error),
                         );
                       }
                     },
