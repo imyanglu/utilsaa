@@ -32,7 +32,7 @@ class PlanDatePicker extends HookWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 8),
               GestureDetector(
                 onTap: () async {
                   print("请求打开");
@@ -103,7 +103,7 @@ class PlanDatePicker extends HookWidget {
                   ),
                 ],
               ),
-              SizedBox(height: 12),
+              SizedBox(height: 8),
               GestureDetector(
                 onTap: () async {
                   if (isLoading.value) return;
@@ -147,7 +147,7 @@ class PlanDatePicker extends HookWidget {
                           color: date == null ? Colors.grey : Colors.black87,
                         ),
                       ),
-                      Icon(Icons.lock_clock, size: 24),
+                      Icon(Icons.access_time, size: 24),
                     ],
                   ),
                 ),

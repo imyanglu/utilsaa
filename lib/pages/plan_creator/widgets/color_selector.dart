@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:music/common/data/const.dart';
 import 'package:music/common/models/label_type.dart';
 
-class LabelSelector extends StatelessWidget {
-  const LabelSelector({Key? key}) : super(key: key);
-
+class ColorSelector extends HookWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Row(
           children: [
-            Text("🏷️", style: TextStyle(fontSize: 16)),
+            Text("🎨", style: TextStyle(fontSize: 16)),
             SizedBox(width: 4),
             Text(
-              "标签",
+              "颜色标记",
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
@@ -23,24 +23,17 @@ class LabelSelector extends StatelessWidget {
           ],
         ),
         SizedBox(height: 8),
-        Wrap(
-          direction: Axis.horizontal,
+        Row(
           spacing: 8,
-          runSpacing: 6,
-          children: PlanLabel.values
+          children: planColors
               .map(
                 (l) => Container(
-                  alignment: Alignment.center,
-                  width: 100,
+                  width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: Color(0xffF8FAFD),
+                    color: l,
                     border: BoxBorder.all(color: Color(0xffF2F5F9)),
                     borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [Text(l.icon + " "), Text(l.label)],
                   ),
                 ),
               )

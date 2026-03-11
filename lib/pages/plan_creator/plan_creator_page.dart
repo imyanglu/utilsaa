@@ -22,6 +22,8 @@ class PlanCreatorPage extends HookWidget {
                     "创建计划",
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
+                  SizedBox(width: 16),
+                  Text("清晰规划每一天", style: TextStyle(color: Color(0xff95A6BC))),
                 ],
               ),
               PlanForm(),
