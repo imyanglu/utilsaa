@@ -118,17 +118,15 @@ class PlanForm extends HookWidget {
                   child: GestureDetector(
                     onTap: () async {
                       final planService = PlanService();
+
                       try {
-                        planService.savePlan(plan_data);
+                        await planService.savePlan(plan_data);
                       } catch (e) {
+                        String error = e.toString();
                         showTopSnackBar(
                           Overlay.of(context),
-                          const CustomSnackBar.info(
-                            message:
-                                'There is some information. You need to do something with that',
-                          ),
+                          CustomSnackBar.info(message: error),
                         );
-                        print(e.toString());
                       }
                     },
                     child: Container(
