@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:music/common/models/label_type.dart';
+import 'package:plan/common/models/label_type.dart';
 
 class LabelSelector extends StatelessWidget {
   final PlanLabel label;

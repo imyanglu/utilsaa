@@ -1,4 +1,4 @@
-import 'package:music/common/models/selector.dart';
+import 'package:plan/common/models/selector.dart';
 
 enum PlanStatus {
   create("创建"),

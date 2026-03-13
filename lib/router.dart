@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:music/pages/add_music_page.dart';
+import 'package:plan/pages/add_music_page.dart';
 
-import 'package:music/pages/home_page.dart';
-import 'package:music/pages/plan_creator/plan_creator_page.dart';
-import 'package:music/pages/plans_page.dart';
+import 'package:plan/pages/home_page.dart';
+import 'package:plan/pages/plan_creator/plan_creator_page.dart';
+import 'package:plan/pages/plans_page.dart';
 
 final appRouter = GoRouter(
   initialLocation: "/plans",

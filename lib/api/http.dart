@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:music/common/utils/storage.dart';
+import 'package:plan/common/utils/storage.dart';
 
 class Http {
   static final Dio _dio =

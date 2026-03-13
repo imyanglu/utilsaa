@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/widgets/add_plan_button.dart';
+import 'package:plan/common/widgets/add_plan_button.dart';
 
 class PlansPage extends HookWidget {
   @override

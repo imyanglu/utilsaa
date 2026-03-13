@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:music/common/models/common_enum.dart';
-import 'package:music/common/models/label_type.dart';
-import 'package:music/pages/plan_creator/widgets/interval_selector.dart';
+import 'package:plan/common/models/common_enum.dart';
+import 'package:plan/common/models/label_type.dart';
+import 'package:plan/pages/plan_creator/widgets/interval_selector.dart';
 
 enum PlanCreatorKey {
   name,

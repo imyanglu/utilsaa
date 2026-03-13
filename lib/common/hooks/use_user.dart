@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/models/user.dart';
-import 'package:music/common/utils/storage.dart';
+import 'package:plan/common/models/user.dart';
+import 'package:plan/common/utils/storage.dart';
 
 ({User user, VoidCallback init, Function(UserField, dynamic) updateUser})
 useUser() {

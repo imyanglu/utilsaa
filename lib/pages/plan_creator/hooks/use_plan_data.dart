@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/models/common_enum.dart';
-import 'package:music/common/models/label_type.dart';
-import 'package:music/common/models/plan_creator.dart';
+import 'package:plan/common/models/common_enum.dart';
+import 'package:plan/common/models/label_type.dart';
+import 'package:plan/common/models/plan_creator.dart';
 
 ({PlanCreator plan_data, Function(PlanCreator newPlan) updatePlan})
 usePlanForm() {

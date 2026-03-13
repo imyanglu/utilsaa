@@ -1,5 +1,5 @@
 import 'dart:ui';
-import 'package:music/common/models/plan_type.dart';
+import 'package:plan/common/models/plan_type.dart';
 
 List<PlanType> planTypes = [
   PlanType(

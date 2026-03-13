@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:music/common/models/user.dart';
-import 'package:music/common/utils/storage.dart';
+import 'package:plan/common/models/user.dart';
+import 'package:plan/common/utils/storage.dart';
 
 final userProvider = StateNotifierProvider<UserNotifier, User>((ref) {
   return UserNotifier();

@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/data/weather_icons.dart';
+import 'package:plan/common/data/weather_icons.dart';
 
 // 渐变方向：从上到下，模拟天空从深蓝到暖橙的过渡
 const morningGradient = LinearGradient(

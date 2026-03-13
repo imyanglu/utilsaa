@@ -1,4 +1,4 @@
-import 'package:music/common/models/plan_creator.dart';
+import 'package:plan/common/models/plan_creator.dart';
 
 class PlanService {
   Future<void> savePlan(PlanCreator plan) async {

@@ -1,6 +1,6 @@
-import 'package:music/api/http.dart';
+import 'package:plan/api/http.dart';
 import 'package:html/parser.dart' as htmlParser;
-import 'package:music/common/models/api_response.dart';
+import 'package:plan/common/models/api_response.dart';
 
 List<String> extractDistrict(String address) {
   final parts = address.trim().split(RegExp(r'\s*·\s*|\s+'));

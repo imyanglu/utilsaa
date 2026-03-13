@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/data/const.dart';
+import 'package:plan/common/data/const.dart';
 
 class ColorSelector extends HookWidget {
   final Color? color;

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:music/common/widgets/back_button.dart';
-import 'package:music/pages/plan_creator/widgets/plan_form.dart';
+import 'package:plan/common/widgets/back_button.dart';
+import 'package:plan/pages/plan_creator/widgets/plan_form.dart';
 
 class PlanCreatorPage extends HookWidget {
   @override

@@ -1,5 +1,5 @@
 import 'package:isar/isar.dart';
-import 'package:music/common/utils/help.dart';
+import 'package:plan/common/utils/help.dart';
 
 class LiveWeather {
   final String province; // 省份

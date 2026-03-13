@@ -1,7 +1,7 @@
 import 'package:isar/isar.dart';
-import 'package:music/common/models/common_enum.dart';
-import 'package:music/common/models/label_type.dart';
-import 'package:music/common/models/plan_type.dart';
+import 'package:plan/common/models/common_enum.dart';
+import 'package:plan/common/models/label_type.dart';
+import 'package:plan/common/models/plan_type.dart';
 part 'plan.g.dart';
 
 @collection

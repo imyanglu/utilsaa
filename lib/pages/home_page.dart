@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:music/common/data/theme.dart';
-import 'package:music/common/widgets/fun_imp.dart';
-import 'package:music/common/widgets/recommended_songs.dart';
-import 'package:music/common/widgets/weather.dart';
+
+import 'package:plan/common/widgets/weather.dart';
 
 class HomePage extends StatelessWidget {
   @override

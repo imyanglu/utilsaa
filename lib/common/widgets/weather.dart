@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:music/api/service.dart';
-import 'package:music/common/data/theme.dart';
-import 'package:music/common/models/api_response.dart';
-import 'package:music/common/models/index.dart';
+import 'package:plan/api/service.dart';
+import 'package:plan/common/data/theme.dart';
+import 'package:plan/common/models/api_response.dart';
+import 'package:plan/common/models/index.dart';
 
-import 'package:music/common/provider/user_provider.dart';
-import 'package:music/common/utils/help.dart';
-import 'package:music/common/widgets/addressPicker.dart';
+import 'package:plan/common/provider/user_provider.dart';
+import 'package:plan/common/utils/help.dart';
+import 'package:plan/common/widgets/addressPicker.dart';
 
 class Weather extends HookConsumerWidget {
   initUserLocation(BuildContext context, WidgetRef ref) async {
