@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:go_router/go_router.dart';
 
 class HomePage extends HookWidget {
   const HomePage({super.key});
@@ -8,7 +9,9 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     final now = DateTime.now();
     final monthCursor = useState<DateTime>(DateTime(now.year, now.month, 1));
-    final selectedDate = useState<DateTime>(DateTime(now.year, now.month, now.day));
+    final selectedDate = useState<DateTime>(
+      DateTime(now.year, now.month, now.day),
+    );
 
     final plans = useMemoized(
       () => <_PlanUiModel>[
@@ -61,6 +64,12 @@ class HomePage extends HookWidget {
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FB),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton: _AddPlanFab(
+        onTap: () {
+          context.push('/createPlan');
+        },
+      ),
       body: SafeArea(
         maintainBottomViewPadding: false,
         child: SingleChildScrollView(
@@ -86,7 +95,11 @@ class HomePage extends HookWidget {
                         SizedBox(height: 8),
                         Row(
                           children: [
-                            Icon(Icons.waving_hand_rounded, size: 18, color: Color(0xFFFFA64D)),
+                            Icon(
+                              Icons.waving_hand_rounded,
+                              size: 18,
+                              color: Color(0xFFFFA64D),
+                            ),
                             SizedBox(width: 8),
                             Text(
                               '周二 · 宜专注',
@@ -130,7 +143,11 @@ class HomePage extends HookWidget {
               const SizedBox(height: 18),
               Row(
                 children: [
-                  const Icon(Icons.event_note_outlined, size: 18, color: Color(0xFF9CA3AF)),
+                  const Icon(
+                    Icons.event_note_outlined,
+                    size: 18,
+                    color: Color(0xFF9CA3AF),
+                  ),
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
@@ -147,16 +164,15 @@ class HomePage extends HookWidget {
               ),
 
               const SizedBox(height: 10),
-              ...plans.map((p) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: _PlanItem(model: p),
-                  )),
+              ...plans.map(
+                (p) => Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: _PlanItem(model: p),
+                ),
+              ),
 
               const SizedBox(height: 10),
-              _BottomActionButton(
-                text: '设置自定义小时',
-                onTap: () {},
-              ),
+
               const SizedBox(height: 10),
               Center(
                 child: Text(
@@ -170,6 +186,43 @@ class HomePage extends HookWidget {
               ),
               const SizedBox(height: 6),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddPlanFab extends StatelessWidget {
+  final VoidCallback onTap;
+  const _AddPlanFab({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.transparent,
+      elevation: 0,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(999),
+        child: Container(
+          width: 56,
+          height: 56,
+          decoration: BoxDecoration(
+            color: const Color(0xFF000000),
+            borderRadius: BorderRadius.circular(999),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x80000000),
+                blurRadius: 18,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 28,
           ),
         ),
       ),
@@ -299,7 +352,8 @@ class _CalendarCard extends StatelessWidget {
         final dayNumber = cellIndex - startOffset + 1; // 1..daysInMonth
         final inMonth = dayNumber >= 1 && dayNumber <= daysInMonth;
 
-        final isSelected = inMonth &&
+        final isSelected =
+            inMonth &&
             selectedDate.year == monthCursor.year &&
             selectedDate.month == monthCursor.month &&
             selectedDate.day == dayNumber;
@@ -338,7 +392,7 @@ class _MonthNavButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(10),
         child: SizedBox(
           width: 30,
-          height: 28,
+          height: 30,
           child: Icon(icon, size: 18, color: const Color(0xFF6B7280)),
         ),
       ),
@@ -396,7 +450,7 @@ class _DayCell extends StatelessWidget {
       onTap: onTap,
       borderRadius: BorderRadius.circular(999),
       child: SizedBox(
-        height: 38,
+        height: 40,
         child: Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -405,7 +459,9 @@ class _DayCell extends StatelessWidget {
                 width: 32,
                 height: 32,
                 decoration: BoxDecoration(
-                  color: isSelected ? const Color(0xFF2F6CF6) : Colors.transparent,
+                  color: isSelected
+                      ? const Color(0xFF2F6CF6)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(999),
                 ),
                 child: Center(child: Text('$day', style: baseText)),
@@ -507,7 +563,11 @@ class _PlanItem extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    const Icon(Icons.access_time, size: 14, color: Color(0xFF9CA3AF)),
+                    const Icon(
+                      Icons.access_time,
+                      size: 14,
+                      color: Color(0xFF9CA3AF),
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       model.timeText,
@@ -519,7 +579,10 @@ class _PlanItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: model.tagBg,
                         borderRadius: BorderRadius.circular(999),
@@ -614,44 +677,6 @@ class _CheckMark extends StatelessWidget {
         color: Colors.white,
         borderRadius: BorderRadius.circular(999),
         border: Border.all(color: const Color(0xFFD1D5DB), width: 1.6),
-      ),
-    );
-  }
-}
-
-class _BottomActionButton extends StatelessWidget {
-  final String text;
-  final VoidCallback onTap;
-  const _BottomActionButton({required this.text, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Material(
-        color: const Color(0xFFEFF3F8),
-        borderRadius: BorderRadius.circular(999),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(999),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: const [
-                Icon(Icons.alarm, size: 18, color: Color(0xFF6B7280)),
-                SizedBox(width: 10),
-                Text(
-                  '设置自定义小时',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF374151),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
       ),
     );
   }

@@ -8,7 +8,7 @@ import 'package:plan/pages/plan_creator/plan_creator_page.dart';
 import 'package:plan/pages/plans_page.dart';
 
 final appRouter = GoRouter(
-  initialLocation: "/plans",
+  initialLocation: "/home",
 
   routes: [
     ShellRoute(

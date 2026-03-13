@@ -10,7 +10,7 @@ import 'package:plan/pages/plan_creator/widgets/label_selector.dart';
 import 'package:plan/pages/plan_creator/widgets/plan_date_picker.dart';
 import 'package:plan/pages/plan_creator/widgets/plan_remark.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
-import 'package:top_snackbar_flutter/tap_bounce_container.dart';
+
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class PlanForm extends HookWidget {
@@ -114,6 +114,36 @@ class PlanForm extends HookWidget {
               spacing: 16,
               children: [
                 Expanded(
+                  flex: 1,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                    },
+                    child: Container(
+                      alignment: Alignment.center,
+                      height: 48,
+                      decoration: BoxDecoration(
+                        color: Color(0xffEEF2F7),
+                        borderRadius: BorderRadius.circular(24),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.close, size: 24, color: Color(0xff7D44D6)),
+                          Text(
+                            "取消",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff333333),
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Expanded(
                   flex: 2,
                   child: GestureDetector(
                     onTap: () async {
@@ -146,36 +176,6 @@ class PlanForm extends HookWidget {
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Container(
-                      alignment: Alignment.center,
-                      height: 48,
-                      decoration: BoxDecoration(
-                        color: Color(0xffEEF2F7),
-                        borderRadius: BorderRadius.circular(24),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(Icons.close, size: 24, color: Color(0xff7D44D6)),
-                          Text(
-                            "取消",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff333333),
                               fontWeight: FontWeight.bold,
                             ),
                           ),
