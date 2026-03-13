@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:plan/common/utils/help.dart';
 import 'package:plan/local/model/plan.dart';
 import 'package:plan/pages/home/model/plan_home_filter.dart';
 import 'package:plan/pages/home/widgets/plan_status_filter.dart';
+import 'package:plan/pages/home/widgets/week_card.dart';
 import 'package:plan/pages/plan_creator/services/plan_service.dart';
 
 class HomePage extends HookWidget {
@@ -33,8 +35,6 @@ class HomePage extends HookWidget {
     }
 
     useEffect(() {
-      final service = PlanService();
-
       Future.microtask(() async {
         try {
           loadPlans();
@@ -44,13 +44,12 @@ class HomePage extends HookWidget {
     }, const []);
 
     final processPlans = useMemoized(() {
-      print(plans.value);
       return plans.value.where(
         (p) => filter.value.planStatus == PlanFilterOption.all
             ? true
-            : filter.value.planStatus == p.status,
+            : filter.value.planStatus.status == p.status,
       );
-    }, [plans.value, filter]);
+    }, [plans.value, filter.value]);
     final dotDays = useMemoized(() {
       return plans.value
           .where((p) => p.date.month == monthCursor.value.month)
@@ -74,69 +73,8 @@ class HomePage extends HookWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: const [
-                        Text(
-                          '你好, 一晨',
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w800,
-                            color: Color(0xFF111827),
-                            height: 1.05,
-                          ),
-                        ),
-                        SizedBox(height: 8),
-                        Row(
-                          children: [
-                            Icon(
-                              Icons.waving_hand_rounded,
-                              size: 18,
-                              color: Color(0xFFFFA64D),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              '周二 · 宜专注',
-                              style: TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF6B7280),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  const _AvatarButton(),
-                ],
-              ),
-
-              const SizedBox(height: 14),
-              _CalendarCard(
-                monthCursor: monthCursor.value,
-                selectedDate: selectedDate.value,
-                dotDays: dotDays,
-                onPrevMonth: () {
-                  final m = monthCursor.value;
-                  monthCursor.value = DateTime(m.year, m.month - 1, 1);
-                },
-                onNextMonth: () {
-                  final m = monthCursor.value;
-                  monthCursor.value = DateTime(m.year, m.month + 1, 1);
-                },
-                onPickDay: (day) {
-                  selectedDate.value = DateTime(
-                    monthCursor.value.year,
-                    monthCursor.value.month,
-                    day,
-                  );
-                },
-              ),
-
+              SvgPicture.asset('assets/images/relaxing.svg'),
+              WeekCard(),
               const SizedBox(height: 18),
               Row(
                 children: [
@@ -148,7 +86,7 @@ class HomePage extends HookWidget {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      '近期计划',
+                      '本周计划',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -166,10 +104,10 @@ class HomePage extends HookWidget {
                 ],
               ),
 
-              const SizedBox(height: 10),
+              const SizedBox(height: 6),
               ...processPlans.map(
                 (p) => Padding(
-                  padding: const EdgeInsets.only(bottom: 8),
+                  padding: const EdgeInsets.only(bottom: 4),
                   child: _PlanItem(model: p),
                 ),
               ),
@@ -223,197 +161,6 @@ class _AddPlanFab extends StatelessWidget {
             ],
           ),
           child: const Icon(Icons.add, color: Colors.white, size: 28),
-        ),
-      ),
-    );
-  }
-}
-
-class _AvatarButton extends StatelessWidget {
-  const _AvatarButton();
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {},
-        borderRadius: BorderRadius.circular(999),
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(999),
-            boxShadow: [
-              BoxShadow(
-                color: const Color(0x0F000000),
-                blurRadius: 18,
-                offset: const Offset(0, 10),
-              ),
-            ],
-            border: Border.all(color: const Color(0xFFE5E7EB)),
-          ),
-          child: const Icon(Icons.person, color: Color(0xFF6B7280)),
-        ),
-      ),
-    );
-  }
-}
-
-class _CalendarCard extends StatelessWidget {
-  final DateTime monthCursor;
-  final DateTime selectedDate;
-  final Set<int> dotDays;
-  final VoidCallback onPrevMonth;
-  final VoidCallback onNextMonth;
-  final ValueChanged<int> onPickDay;
-
-  const _CalendarCard({
-    required this.monthCursor,
-    required this.selectedDate,
-    required this.dotDays,
-    required this.onPrevMonth,
-    required this.onNextMonth,
-    required this.onPickDay,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final monthText = '${monthCursor.month}月 ${monthCursor.year}';
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: const Color(0x0F000000),
-            blurRadius: 18,
-            offset: const Offset(0, 10),
-          ),
-        ],
-        border: Border.all(color: const Color(0xFFF1F5F9)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              Text(
-                monthText,
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w800,
-                  color: Color(0xFF111827),
-                ),
-              ),
-              const Spacer(),
-              _MonthNavButton(icon: Icons.chevron_left, onTap: onPrevMonth),
-              const SizedBox(width: 8),
-              _MonthNavButton(icon: Icons.chevron_right, onTap: onNextMonth),
-            ],
-          ),
-          const SizedBox(height: 10),
-          const Row(
-            children: [
-              _WeekdayCell(text: '一'),
-              _WeekdayCell(text: '二'),
-              _WeekdayCell(text: '三'),
-              _WeekdayCell(text: '四'),
-              _WeekdayCell(text: '五'),
-              _WeekdayCell(text: '六'),
-              _WeekdayCell(text: '日'),
-            ],
-          ),
-          const SizedBox(height: 6),
-          ..._buildWeeks(context),
-        ],
-      ),
-    );
-  }
-
-  List<Widget> _buildWeeks(BuildContext context) {
-    final firstDay = DateTime(monthCursor.year, monthCursor.month, 1);
-    final nextMonth = DateTime(monthCursor.year, monthCursor.month + 1, 1);
-    final daysInMonth = nextMonth.difference(firstDay).inDays;
-    final startOffset = (firstDay.weekday - DateTime.monday) % 7; // 0..6
-
-    final totalCells = ((startOffset + daysInMonth + 6) ~/ 7) * 7; // full weeks
-    final rows = totalCells ~/ 7;
-
-    final List<Widget> weekRows = [];
-    int cellIndex = 0;
-    for (int r = 0; r < rows; r++) {
-      final dayCells = <Widget>[];
-      for (int c = 0; c < 7; c++) {
-        final dayNumber = cellIndex - startOffset + 1; // 1..daysInMonth
-        final inMonth = dayNumber >= 1 && dayNumber <= daysInMonth;
-
-        final isSelected =
-            inMonth &&
-            selectedDate.year == monthCursor.year &&
-            selectedDate.month == monthCursor.month &&
-            selectedDate.day == dayNumber;
-
-        dayCells.add(
-          Expanded(
-            child: _DayCell(
-              day: inMonth ? dayNumber : null,
-              isSelected: isSelected,
-              hasDot: inMonth ? dotDays.contains(dayNumber) : false,
-              onTap: inMonth ? () => onPickDay(dayNumber) : null,
-            ),
-          ),
-        );
-        cellIndex++;
-      }
-      weekRows.add(Row(children: dayCells));
-      if (r != rows - 1) weekRows.add(const SizedBox(height: 6));
-    }
-    return weekRows;
-  }
-}
-
-class _MonthNavButton extends StatelessWidget {
-  final IconData icon;
-  final VoidCallback onTap;
-  const _MonthNavButton({required this.icon, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF3F4F6),
-      borderRadius: BorderRadius.circular(10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(10),
-        child: SizedBox(
-          width: 30,
-          height: 30,
-          child: Icon(icon, size: 18, color: const Color(0xFF6B7280)),
-        ),
-      ),
-    );
-  }
-}
-
-class _WeekdayCell extends StatelessWidget {
-  final String text;
-  const _WeekdayCell({required this.text});
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Center(
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF9CA3AF),
-          ),
         ),
       ),
     );
