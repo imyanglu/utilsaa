@@ -1,13 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-
-dateTimeFormat(DateTime date) {
-  return '${date.year.toString()}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
-}
-
-timeFormat(TimeOfDay time) {
-  return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
-}
+import 'package:plan/common/utils/help.dart';
 
 class PlanDatePicker extends HookWidget {
   final DateTime? date;

@@ -31,6 +31,7 @@ class PlanCreatorPage extends HookWidget {
           ),
         ),
       ),
+      resizeToAvoidBottomInset: false,
     );
   }
 }

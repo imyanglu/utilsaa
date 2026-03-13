@@ -131,7 +131,7 @@ class PlanForm extends HookWidget {
                         children: [
                           Icon(Icons.close, size: 24, color: Color(0xff7D44D6)),
                           Text(
-                            "取消",
+                            "返回",
                             style: TextStyle(
                               fontSize: 16,
                               color: Color(0xff333333),
@@ -151,9 +151,13 @@ class PlanForm extends HookWidget {
 
                       try {
                         await planService.savePlan(plan_data);
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.info(message: "创建成功!"),
+                        );
                       } catch (e) {
+                        print(e);
                         String error = e.toString().split(': ').last;
-
                         showTopSnackBar(
                           Overlay.of(context),
                           CustomSnackBar.error(message: error),

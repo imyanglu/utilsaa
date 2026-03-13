@@ -10,17 +10,15 @@ class Plan {
   late String name;
   late String description;
   late DateTime date;
-  late int timeInMinutes;
   @enumerated
   late PlanLabel label;
   late int colorValue;
   @enumerated
   late IntervalEnum interval;
-  late double intervalHour;
+  late double? intervalHour;
   late String? note;
   @enumerated
   late PlanStatus status;
-  late int? finishCount;
+  late List<DateTime>? finishDate;
   late DateTime createTime;
-  late DateTime lastFinishedTime;
 }

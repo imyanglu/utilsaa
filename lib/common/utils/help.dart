@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:plan/api/service.dart';
 import 'dart:convert';
@@ -47,4 +48,16 @@ Future<({String? adCode, List<String>? address})> getLocation() async {
   }
 
   return (adCode: adCode, address: address);
+}
+
+dateTimeFormat(DateTime date) {
+  return '${date.year.toString()}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')}';
+}
+
+dateFormat(DateTime date) {
+  return '${date.year.toString()}/${date.month.toString().padLeft(2, '0')}/${date.day.toString().padLeft(2, '0')} - ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+}
+
+timeFormat(TimeOfDay time) {
+  return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
 }

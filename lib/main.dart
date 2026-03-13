@@ -1,25 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:isar/isar.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:plan/common/services/isar_service.dart';
 import 'package:plan/common/utils/storage.dart';
+import 'package:plan/local/model/plan.dart';
 import 'package:plan/router.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Storage.init();
-
-  runApp(
-    ProviderScope(
-      // ⚠️ 必须包裹根组件
-      child: MyApp(),
-    ),
-  );
+  await IsarService.init();
+  runApp(ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

@@ -1,6 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:go_router/go_router.dart';
+import 'package:plan/common/utils/help.dart';
+import 'package:plan/local/model/plan.dart';
+import 'package:plan/pages/home/model/plan_home_filter.dart';
+import 'package:plan/pages/home/widgets/plan_status_filter.dart';
+import 'package:plan/pages/plan_creator/services/plan_service.dart';
 
 class HomePage extends HookWidget {
   const HomePage({super.key});
@@ -12,62 +17,54 @@ class HomePage extends HookWidget {
     final selectedDate = useState<DateTime>(
       DateTime(now.year, now.month, now.day),
     );
-
-    final plans = useMemoized(
-      () => <_PlanUiModel>[
-        _PlanUiModel(
-          day: 16,
-          month: 3,
-          title: '产品设计评审',
-          timeText: '14:30',
-          tagText: '工作',
-          tagBg: const Color(0xFFE9EFFA),
-          isDone: false,
-        ),
-        _PlanUiModel(
-          day: 18,
-          month: 3,
-          title: '健身房：背部训练',
-          timeText: '18:45',
-          tagText: '健康',
-          tagBg: const Color(0xFFEAF6EE),
-          isDone: false,
-        ),
-        _PlanUiModel(
-          day: 11,
-          month: 3,
-          title: '撰写季度汇报PPT',
-          timeText: '10:00',
-          tagText: '工作',
-          tagBg: const Color(0xFFE9EFFA),
-          isDone: true,
-        ),
-        _PlanUiModel(
-          day: 21,
-          month: 3,
-          title: '朋友聚餐·南山店',
-          timeText: '19:30',
-          tagText: '个人',
-          tagBg: const Color(0xFFEFF1F4),
-          isDone: false,
-        ),
-      ],
-      const [],
+    final filter = useState<PlanHomeFilter>(
+      PlanHomeFilter(planStatus: PlanFilterOption.create),
     );
+    final plans = useState<List<Plan>>([]);
 
+    Future<void> loadPlans() async {
+      try {
+        final service = PlanService();
+        final List<Plan> dbPlans = await service.getAllPlans();
+        plans.value = dbPlans;
+      } catch (e) {
+        debugPrint('加载计划失败: $e');
+      }
+    }
+
+    useEffect(() {
+      final service = PlanService();
+
+      Future.microtask(() async {
+        try {
+          loadPlans();
+        } catch (_) {}
+      });
+      return null;
+    }, const []);
+
+    final processPlans = useMemoized(() {
+      print(plans.value);
+      return plans.value.where(
+        (p) => filter.value.planStatus == PlanFilterOption.all
+            ? true
+            : filter.value.planStatus == p.status,
+      );
+    }, [plans.value, filter]);
     final dotDays = useMemoized(() {
-      return plans
-          .where((p) => p.month == monthCursor.value.month)
-          .map((p) => p.day)
+      return plans.value
+          .where((p) => p.date.month == monthCursor.value.month)
+          .map((p) => p.date.day)
           .toSet();
-    }, [plans, monthCursor.value.month]);
+    }, [plans.value, monthCursor.value.month]);
 
     return Scaffold(
       backgroundColor: const Color(0xFFF4F7FB),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _AddPlanFab(
-        onTap: () {
-          context.push('/createPlan');
+        onTap: () async {
+          await context.push('/createPlan');
+          await loadPlans();
         },
       ),
       body: SafeArea(
@@ -159,14 +156,20 @@ class HomePage extends HookWidget {
                       ),
                     ),
                   ),
-                  _AllButton(onTap: () {}),
+                  PlanStatusFilter(
+                    selected: filter.value.planStatus,
+                    onChanged: (option) {
+                      filter.value = filter.value.copyWith(planStatus: option);
+                      // 按 option.status 过滤列表
+                    },
+                  ),
                 ],
               ),
 
               const SizedBox(height: 10),
-              ...plans.map(
+              ...processPlans.map(
                 (p) => Padding(
-                  padding: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.only(bottom: 8),
                   child: _PlanItem(model: p),
                 ),
               ),
@@ -219,11 +222,7 @@ class _AddPlanFab extends StatelessWidget {
               ),
             ],
           ),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 28,
-          ),
+          child: const Icon(Icons.add, color: Colors.white, size: 28),
         ),
       ),
     );
@@ -483,56 +482,8 @@ class _DayCell extends StatelessWidget {
   }
 }
 
-class _AllButton extends StatelessWidget {
-  final VoidCallback onTap;
-  const _AllButton({required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: const Color(0xFFF3F4F6),
-      borderRadius: BorderRadius.circular(999),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(999),
-        child: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          child: Text(
-            '全部',
-            style: TextStyle(
-              fontSize: 12,
-              color: Color(0xFF6B7280),
-              fontWeight: FontWeight.w700,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _PlanUiModel {
-  final int day;
-  final int month;
-  final String title;
-  final String timeText;
-  final String tagText;
-  final Color tagBg;
-  final bool isDone;
-
-  const _PlanUiModel({
-    required this.day,
-    required this.month,
-    required this.title,
-    required this.timeText,
-    required this.tagText,
-    required this.tagBg,
-    required this.isDone,
-  });
-}
-
 class _PlanItem extends StatelessWidget {
-  final _PlanUiModel model;
+  final Plan model;
   const _PlanItem({required this.model});
 
   @override
@@ -546,14 +497,14 @@ class _PlanItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          _DateBadge(day: model.day, month: model.month),
+          _DateBadge(day: model.date.day, month: model.date.month),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  model.title,
+                  model.name,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w800,
@@ -570,7 +521,7 @@ class _PlanItem extends StatelessWidget {
                     ),
                     const SizedBox(width: 6),
                     Text(
-                      model.timeText,
+                      dateFormat(model.date),
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w700,
@@ -583,12 +534,12 @@ class _PlanItem extends StatelessWidget {
                         horizontal: 10,
                         vertical: 4,
                       ),
-                      decoration: BoxDecoration(
-                        color: model.tagBg,
-                        borderRadius: BorderRadius.circular(999),
-                      ),
+                      // decoration: BoxDecoration(
+                      //   color: model.,
+                      //   borderRadius: BorderRadius.circular(999),
+                      // ),
                       child: Text(
-                        model.tagText,
+                        model.label.label,
                         style: const TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w800,
@@ -602,7 +553,7 @@ class _PlanItem extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 10),
-          _CheckMark(isChecked: model.isDone),
+          _CheckMark(isChecked: false),
         ],
       ),
     );

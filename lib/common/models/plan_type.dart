@@ -1,14 +1,19 @@
+import 'dart:ui';
+
 import 'package:plan/common/models/selector.dart';
 
 enum PlanStatus {
-  create("创建"),
-  active("活跃"),
-  archived("废弃"),
-  completed("完成");
+  create("活跃", Color(0xFFFF6B35), Color(0xFFFFF0EB)),
+  archived("废弃", Color(0xFF8B8FA8), Color(0xFFF0F1F5)), // 灰
+  completed("完成", Color(0xFF00C48C), Color(0xFFE0FAF3)); // 绿
 
   final String label;
-  const PlanStatus(this.label);
-  bool get isActive => this == PlanStatus.active;
+  final Color color; // 主色（文字、图标）
+  final Color bgColor; // 背景色（标签底色）
+
+  const PlanStatus(this.label, this.color, this.bgColor);
+
+  bool get isCreate => this == PlanStatus.create;
   bool get isArchived => this == PlanStatus.archived;
   bool get isCompleted => this == PlanStatus.completed;
 }
