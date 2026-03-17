@@ -33,6 +33,7 @@ final appRouter = GoRouter(
             },
             items: const [
               BottomNavigationBarItem(icon: Icon(Icons.home), label: '首页'),
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: '抽奖'),
               BottomNavigationBarItem(
                 icon: Icon(Icons.music_note),
                 label: '我的',

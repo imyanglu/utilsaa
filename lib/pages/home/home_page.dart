@@ -241,7 +241,6 @@ class _PlanItem extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.8),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(color: const Color(0xFFEFF2F6)),
         ),

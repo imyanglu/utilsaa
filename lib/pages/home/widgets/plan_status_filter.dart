@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:plan/common/models/common_enum.dart';
 import 'package:plan/common/models/plan_type.dart';
 
 enum PlanFilterOption {

@@ -14,7 +14,7 @@ class _WeekdayCell extends StatelessWidget {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w700,
-            color: Color(0xFF9CA3AF),
+            color: Colors.white,
           ),
         ),
       ),
