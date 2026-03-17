@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
@@ -45,9 +47,7 @@ class HomePage extends HookWidget {
 
     final processPlans = useMemoized(() {
       return plans.value.where(
-        (p) => filter.value.planStatus == PlanFilterOption.all
-            ? true
-            : filter.value.planStatus.status == p.status,
+        (p) => filter.value.planStatus.status == p.status,
       );
     }, [plans.value, filter.value]);
     final dotDays = useMemoized(() {
@@ -56,9 +56,8 @@ class HomePage extends HookWidget {
           .map((p) => p.date.day)
           .toSet();
     }, [plans.value, monthCursor.value.month]);
-
+    final statusBarHeight = MediaQuery.of(context).padding.top;
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F7FB),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: _AddPlanFab(
         onTap: () async {
@@ -66,10 +65,12 @@ class HomePage extends HookWidget {
           await loadPlans();
         },
       ),
-      body: SafeArea(
-        maintainBottomViewPadding: false,
+      body: Container(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          padding: EdgeInsets.symmetric(
+            horizontal: 12,
+            vertical: statusBarHeight + 4,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -86,7 +87,7 @@ class HomePage extends HookWidget {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      '本周计划',
+                      '今日计划',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,
@@ -235,73 +236,76 @@ class _PlanItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      decoration: BoxDecoration(
-        color: const Color(0xFFF8FAFC),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFFEFF2F6)),
-      ),
-      child: Row(
-        children: [
-          _DateBadge(day: model.date.day, month: model.date.month),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  model.name,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w800,
-                    color: Color(0xFF111827),
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 0, sigmaY: 0),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        decoration: BoxDecoration(
+          color: Colors.white.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: const Color(0xFFEFF2F6)),
+        ),
+        child: Row(
+          children: [
+            _DateBadge(day: model.date.day, month: model.date.month),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    model.name,
+                    style: const TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w800,
+                      color: Color(0xFF111827),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.access_time,
-                      size: 14,
-                      color: Color(0xFF9CA3AF),
-                    ),
-                    const SizedBox(width: 6),
-                    Text(
-                      dateFormat(model.date),
-                      style: const TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w700,
-                        color: Color(0xFF6B7280),
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.access_time,
+                        size: 14,
+                        color: Color(0xFF9CA3AF),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 10,
-                        vertical: 4,
-                      ),
-                      // decoration: BoxDecoration(
-                      //   color: model.,
-                      //   borderRadius: BorderRadius.circular(999),
-                      // ),
-                      child: Text(
-                        model.label.label,
+                      const SizedBox(width: 6),
+                      Text(
+                        dateFormat(model.date),
                         style: const TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w800,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w700,
                           color: Color(0xFF6B7280),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                      const SizedBox(width: 10),
+                      // Container(
+                      //   padding: const EdgeInsets.symmetric(
+                      //     horizontal: 10,
+                      //     vertical: 4,
+                      //   ),
+                      //   // decoration: BoxDecoration(
+                      //   //   color: model.,
+                      //   //   borderRadius: BorderRadius.circular(999),
+                      //   // ),
+                      //   child: Text(
+                      //     model.label.label,
+                      //     style: const TextStyle(
+                      //       fontSize: 11,
+                      //       fontWeight: FontWeight.w800,
+                      //       color: Color(0xFF6B7280),
+                      //     ),
+                      //   ),
+                      // ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-          const SizedBox(width: 10),
-          _CheckMark(isChecked: false),
-        ],
+            const SizedBox(width: 10),
+            _CheckMark(isChecked: false),
+          ],
+        ),
       ),
     );
   }
@@ -360,10 +364,7 @@ class _CheckMark extends StatelessWidget {
       return Container(
         width: 26,
         height: 26,
-        decoration: BoxDecoration(
-          color: const Color(0xFF2E8B57),
-          borderRadius: BorderRadius.circular(999),
-        ),
+        decoration: BoxDecoration(borderRadius: BorderRadius.circular(999)),
         child: const Icon(Icons.check, size: 16, color: Colors.white),
       );
     }

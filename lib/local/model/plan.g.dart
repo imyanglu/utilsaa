@@ -17,25 +17,25 @@ const PlanSchema = CollectionSchema(
   name: r'Plan',
   id: 8143067535675439181,
   properties: {
-    r'colorValue': PropertySchema(
+    r'alertTimeMinutes': PropertySchema(
       id: 0,
+      name: r'alertTimeMinutes',
+      type: IsarType.longList,
+    ),
+    r'colorValue': PropertySchema(
+      id: 1,
       name: r'colorValue',
       type: IsarType.long,
     ),
     r'createTime': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'createTime',
       type: IsarType.dateTime,
     ),
     r'date': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'date',
       type: IsarType.dateTime,
-    ),
-    r'description': PropertySchema(
-      id: 3,
-      name: r'description',
-      type: IsarType.string,
     ),
     r'finishDate': PropertySchema(
       id: 4,
@@ -48,29 +48,18 @@ const PlanSchema = CollectionSchema(
       type: IsarType.byte,
       enumMap: _PlanintervalEnumValueMap,
     ),
-    r'intervalHour': PropertySchema(
-      id: 6,
-      name: r'intervalHour',
-      type: IsarType.double,
-    ),
-    r'label': PropertySchema(
-      id: 7,
-      name: r'label',
-      type: IsarType.byte,
-      enumMap: _PlanlabelEnumValueMap,
-    ),
     r'name': PropertySchema(
-      id: 8,
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
     r'note': PropertySchema(
-      id: 9,
+      id: 7,
       name: r'note',
       type: IsarType.string,
     ),
     r'status': PropertySchema(
-      id: 10,
+      id: 8,
       name: r'status',
       type: IsarType.byte,
       enumMap: _PlanstatusEnumValueMap,
@@ -81,7 +70,60 @@ const PlanSchema = CollectionSchema(
   deserialize: _planDeserialize,
   deserializeProp: _planDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'name': IndexSchema(
+      id: 879695947855722453,
+      name: r'name',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'name',
+          type: IndexType.value,
+          caseSensitive: true,
+        )
+      ],
+    ),
+    r'date': IndexSchema(
+      id: -7552997827385218417,
+      name: r'date',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'date',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'interval': IndexSchema(
+      id: 6394116657275448944,
+      name: r'interval',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'interval',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    ),
+    r'status': IndexSchema(
+      id: -107785170620420283,
+      name: r'status',
+      unique: false,
+      replace: false,
+      properties: [
+        IndexPropertySchema(
+          name: r'status',
+          type: IndexType.value,
+          caseSensitive: false,
+        )
+      ],
+    )
+  },
   links: {},
   embeddedSchemas: {},
   getId: _planGetId,
@@ -96,7 +138,12 @@ int _planEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
-  bytesCount += 3 + object.description.length * 3;
+  {
+    final value = object.alertTimeMinutes;
+    if (value != null) {
+      bytesCount += 3 + value.length * 8;
+    }
+  }
   {
     final value = object.finishDate;
     if (value != null) {
@@ -119,17 +166,15 @@ void _planSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.colorValue);
-  writer.writeDateTime(offsets[1], object.createTime);
-  writer.writeDateTime(offsets[2], object.date);
-  writer.writeString(offsets[3], object.description);
+  writer.writeLongList(offsets[0], object.alertTimeMinutes);
+  writer.writeLong(offsets[1], object.colorValue);
+  writer.writeDateTime(offsets[2], object.createTime);
+  writer.writeDateTime(offsets[3], object.date);
   writer.writeDateTimeList(offsets[4], object.finishDate);
   writer.writeByte(offsets[5], object.interval.index);
-  writer.writeDouble(offsets[6], object.intervalHour);
-  writer.writeByte(offsets[7], object.label.index);
-  writer.writeString(offsets[8], object.name);
-  writer.writeString(offsets[9], object.note);
-  writer.writeByte(offsets[10], object.status.index);
+  writer.writeString(offsets[6], object.name);
+  writer.writeString(offsets[7], object.note);
+  writer.writeByte(offsets[8], object.status.index);
 }
 
 Plan _planDeserialize(
@@ -139,21 +184,18 @@ Plan _planDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Plan();
-  object.colorValue = reader.readLong(offsets[0]);
-  object.createTime = reader.readDateTime(offsets[1]);
-  object.date = reader.readDateTime(offsets[2]);
-  object.description = reader.readString(offsets[3]);
+  object.alertTimeMinutes = reader.readLongList(offsets[0]);
+  object.colorValue = reader.readLong(offsets[1]);
+  object.createTime = reader.readDateTime(offsets[2]);
+  object.date = reader.readDateTime(offsets[3]);
   object.finishDate = reader.readDateTimeList(offsets[4]);
   object.id = id;
   object.interval =
       _PlanintervalValueEnumMap[reader.readByteOrNull(offsets[5])] ??
           IntervalEnum.none;
-  object.intervalHour = reader.readDoubleOrNull(offsets[6]);
-  object.label = _PlanlabelValueEnumMap[reader.readByteOrNull(offsets[7])] ??
-      PlanLabel.personal;
-  object.name = reader.readString(offsets[8]);
-  object.note = reader.readStringOrNull(offsets[9]);
-  object.status = _PlanstatusValueEnumMap[reader.readByteOrNull(offsets[10])] ??
+  object.name = reader.readString(offsets[6]);
+  object.note = reader.readStringOrNull(offsets[7]);
+  object.status = _PlanstatusValueEnumMap[reader.readByteOrNull(offsets[8])] ??
       PlanStatus.create;
   return object;
 }
@@ -166,28 +208,23 @@ P _planDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readLongList(offset)) as P;
     case 1:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 2:
       return (reader.readDateTime(offset)) as P;
     case 3:
-      return (reader.readString(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
       return (reader.readDateTimeList(offset)) as P;
     case 5:
       return (_PlanintervalValueEnumMap[reader.readByteOrNull(offset)] ??
           IntervalEnum.none) as P;
     case 6:
-      return (reader.readDoubleOrNull(offset)) as P;
-    case 7:
-      return (_PlanlabelValueEnumMap[reader.readByteOrNull(offset)] ??
-          PlanLabel.personal) as P;
-    case 8:
       return (reader.readString(offset)) as P;
-    case 9:
+    case 7:
       return (reader.readStringOrNull(offset)) as P;
-    case 10:
+    case 8:
       return (_PlanstatusValueEnumMap[reader.readByteOrNull(offset)] ??
           PlanStatus.create) as P;
     default:
@@ -197,35 +234,11 @@ P _planDeserializeProp<P>(
 
 const _PlanintervalEnumValueMap = {
   'none': 0,
-  'weekly': 1,
-  'monthly': 2,
-  'daily': 3,
-  'other': 4,
+  'daily': 1,
 };
 const _PlanintervalValueEnumMap = {
   0: IntervalEnum.none,
-  1: IntervalEnum.weekly,
-  2: IntervalEnum.monthly,
-  3: IntervalEnum.daily,
-  4: IntervalEnum.other,
-};
-const _PlanlabelEnumValueMap = {
-  'personal': 0,
-  'work': 1,
-  'school': 2,
-  'family': 3,
-  'health': 4,
-  'study': 5,
-  'other': 6,
-};
-const _PlanlabelValueEnumMap = {
-  0: PlanLabel.personal,
-  1: PlanLabel.work,
-  2: PlanLabel.school,
-  3: PlanLabel.family,
-  4: PlanLabel.health,
-  5: PlanLabel.study,
-  6: PlanLabel.other,
+  1: IntervalEnum.daily,
 };
 const _PlanstatusEnumValueMap = {
   'create': 0,
@@ -254,6 +267,38 @@ extension PlanQueryWhereSort on QueryBuilder<Plan, Plan, QWhere> {
   QueryBuilder<Plan, Plan, QAfterWhere> anyId() {
     return QueryBuilder.apply(this, (query) {
       return query.addWhereClause(const IdWhereClause.any());
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhere> anyName() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'name'),
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhere> anyDate() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'date'),
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhere> anyInterval() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'interval'),
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhere> anyStatus() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        const IndexWhereClause.any(indexName: r'status'),
+      );
     });
   }
 }
@@ -323,9 +368,568 @@ extension PlanQueryWhere on QueryBuilder<Plan, Plan, QWhereClause> {
       ));
     });
   }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'name',
+        value: [name],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameNotEqualTo(String name) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'name',
+              lower: [],
+              upper: [name],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'name',
+              lower: [name],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'name',
+              lower: [name],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'name',
+              lower: [],
+              upper: [name],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameGreaterThan(
+    String name, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'name',
+        lower: [name],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameLessThan(
+    String name, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'name',
+        lower: [],
+        upper: [name],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameBetween(
+    String lowerName,
+    String upperName, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'name',
+        lower: [lowerName],
+        includeLower: includeLower,
+        upper: [upperName],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameStartsWith(
+      String NamePrefix) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'name',
+        lower: [NamePrefix],
+        upper: ['$NamePrefix\u{FFFFF}'],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'name',
+        value: [''],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> nameIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'name',
+              upper: [''],
+            ))
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'name',
+              lower: [''],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.greaterThan(
+              indexName: r'name',
+              lower: [''],
+            ))
+            .addWhereClause(IndexWhereClause.lessThan(
+              indexName: r'name',
+              upper: [''],
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> dateEqualTo(DateTime date) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'date',
+        value: [date],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> dateNotEqualTo(DateTime date) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'date',
+              lower: [],
+              upper: [date],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'date',
+              lower: [date],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'date',
+              lower: [date],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'date',
+              lower: [],
+              upper: [date],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> dateGreaterThan(
+    DateTime date, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'date',
+        lower: [date],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> dateLessThan(
+    DateTime date, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'date',
+        lower: [],
+        upper: [date],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> dateBetween(
+    DateTime lowerDate,
+    DateTime upperDate, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'date',
+        lower: [lowerDate],
+        includeLower: includeLower,
+        upper: [upperDate],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> intervalEqualTo(
+      IntervalEnum interval) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'interval',
+        value: [interval],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> intervalNotEqualTo(
+      IntervalEnum interval) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'interval',
+              lower: [],
+              upper: [interval],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'interval',
+              lower: [interval],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'interval',
+              lower: [interval],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'interval',
+              lower: [],
+              upper: [interval],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> intervalGreaterThan(
+    IntervalEnum interval, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'interval',
+        lower: [interval],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> intervalLessThan(
+    IntervalEnum interval, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'interval',
+        lower: [],
+        upper: [interval],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> intervalBetween(
+    IntervalEnum lowerInterval,
+    IntervalEnum upperInterval, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'interval',
+        lower: [lowerInterval],
+        includeLower: includeLower,
+        upper: [upperInterval],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> statusEqualTo(PlanStatus status) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'status',
+        value: [status],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> statusNotEqualTo(
+      PlanStatus status) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [],
+              upper: [status],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [status],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [status],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'status',
+              lower: [],
+              upper: [status],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> statusGreaterThan(
+    PlanStatus status, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'status',
+        lower: [status],
+        includeLower: include,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> statusLessThan(
+    PlanStatus status, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'status',
+        lower: [],
+        upper: [status],
+        includeUpper: include,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterWhereClause> statusBetween(
+    PlanStatus lowerStatus,
+    PlanStatus upperStatus, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'status',
+        lower: [lowerStatus],
+        includeLower: includeLower,
+        upper: [upperStatus],
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension PlanQueryFilter on QueryBuilder<Plan, Plan, QFilterCondition> {
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'alertTimeMinutes',
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'alertTimeMinutes',
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesElementEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'alertTimeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesElementGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'alertTimeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesElementLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'alertTimeMinutes',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesElementBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'alertTimeMinutes',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesLengthEqualTo(
+      int length) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        length,
+        true,
+        length,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        0,
+        true,
+        0,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        0,
+        false,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesLengthLessThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        0,
+        true,
+        length,
+        include,
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition>
+      alertTimeMinutesLengthGreaterThan(
+    int length, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        length,
+        include,
+        999999,
+        true,
+      );
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesLengthBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.listLength(
+        r'alertTimeMinutes',
+        lower,
+        includeLower,
+        upper,
+        includeUpper,
+      );
+    });
+  }
+
   QueryBuilder<Plan, Plan, QAfterFilterCondition> colorValueEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -479,136 +1083,6 @@ extension PlanQueryFilter on QueryBuilder<Plan, Plan, QFilterCondition> {
         includeLower: includeLower,
         upper: upper,
         includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionGreaterThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionLessThan(
-    String value, {
-    bool include = false,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionBetween(
-    String lower,
-    String upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'description',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionStartsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.startsWith(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionEndsWith(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.endsWith(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionContains(
-      String value,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.contains(
-        property: r'description',
-        value: value,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.matches(
-        property: r'description',
-        wildcard: pattern,
-        caseSensitive: caseSensitive,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'description',
-        value: '',
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> descriptionIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        property: r'description',
-        value: '',
       ));
     });
   }
@@ -863,137 +1337,6 @@ extension PlanQueryFilter on QueryBuilder<Plan, Plan, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'interval',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'intervalHour',
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'intervalHour',
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourEqualTo(
-    double? value, {
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'intervalHour',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourGreaterThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'intervalHour',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourLessThan(
-    double? value, {
-    bool include = false,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'intervalHour',
-        value: value,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> intervalHourBetween(
-    double? lower,
-    double? upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-    double epsilon = Query.epsilon,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'intervalHour',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-        epsilon: epsilon,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> labelEqualTo(
-      PlanLabel value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'label',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> labelGreaterThan(
-    PlanLabel value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'label',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> labelLessThan(
-    PlanLabel value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'label',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> labelBetween(
-    PlanLabel lower,
-    PlanLabel upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'label',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1369,18 +1712,6 @@ extension PlanQuerySortBy on QueryBuilder<Plan, Plan, QSortBy> {
     });
   }
 
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByDescription() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByDescriptionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
-    });
-  }
-
   QueryBuilder<Plan, Plan, QAfterSortBy> sortByInterval() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'interval', Sort.asc);
@@ -1390,30 +1721,6 @@ extension PlanQuerySortBy on QueryBuilder<Plan, Plan, QSortBy> {
   QueryBuilder<Plan, Plan, QAfterSortBy> sortByIntervalDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'interval', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByIntervalHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'intervalHour', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByIntervalHourDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'intervalHour', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByLabel() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'label', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> sortByLabelDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'label', Sort.desc);
     });
   }
 
@@ -1491,18 +1798,6 @@ extension PlanQuerySortThenBy on QueryBuilder<Plan, Plan, QSortThenBy> {
     });
   }
 
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByDescription() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByDescriptionDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'description', Sort.desc);
-    });
-  }
-
   QueryBuilder<Plan, Plan, QAfterSortBy> thenById() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'id', Sort.asc);
@@ -1524,30 +1819,6 @@ extension PlanQuerySortThenBy on QueryBuilder<Plan, Plan, QSortThenBy> {
   QueryBuilder<Plan, Plan, QAfterSortBy> thenByIntervalDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'interval', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByIntervalHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'intervalHour', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByIntervalHourDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'intervalHour', Sort.desc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByLabel() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'label', Sort.asc);
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterSortBy> thenByLabelDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(r'label', Sort.desc);
     });
   }
 
@@ -1589,6 +1860,12 @@ extension PlanQuerySortThenBy on QueryBuilder<Plan, Plan, QSortThenBy> {
 }
 
 extension PlanQueryWhereDistinct on QueryBuilder<Plan, Plan, QDistinct> {
+  QueryBuilder<Plan, Plan, QDistinct> distinctByAlertTimeMinutes() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'alertTimeMinutes');
+    });
+  }
+
   QueryBuilder<Plan, Plan, QDistinct> distinctByColorValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'colorValue');
@@ -1607,13 +1884,6 @@ extension PlanQueryWhereDistinct on QueryBuilder<Plan, Plan, QDistinct> {
     });
   }
 
-  QueryBuilder<Plan, Plan, QDistinct> distinctByDescription(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'description', caseSensitive: caseSensitive);
-    });
-  }
-
   QueryBuilder<Plan, Plan, QDistinct> distinctByFinishDate() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'finishDate');
@@ -1623,18 +1893,6 @@ extension PlanQueryWhereDistinct on QueryBuilder<Plan, Plan, QDistinct> {
   QueryBuilder<Plan, Plan, QDistinct> distinctByInterval() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'interval');
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QDistinct> distinctByIntervalHour() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'intervalHour');
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QDistinct> distinctByLabel() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'label');
     });
   }
 
@@ -1666,6 +1924,12 @@ extension PlanQueryProperty on QueryBuilder<Plan, Plan, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Plan, List<int>?, QQueryOperations> alertTimeMinutesProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'alertTimeMinutes');
+    });
+  }
+
   QueryBuilder<Plan, int, QQueryOperations> colorValueProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'colorValue');
@@ -1684,12 +1948,6 @@ extension PlanQueryProperty on QueryBuilder<Plan, Plan, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Plan, String, QQueryOperations> descriptionProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'description');
-    });
-  }
-
   QueryBuilder<Plan, List<DateTime>?, QQueryOperations> finishDateProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'finishDate');
@@ -1699,18 +1957,6 @@ extension PlanQueryProperty on QueryBuilder<Plan, Plan, QQueryProperty> {
   QueryBuilder<Plan, IntervalEnum, QQueryOperations> intervalProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'interval');
-    });
-  }
-
-  QueryBuilder<Plan, double?, QQueryOperations> intervalHourProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'intervalHour');
-    });
-  }
-
-  QueryBuilder<Plan, PlanLabel, QQueryOperations> labelProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'label');
     });
   }
 

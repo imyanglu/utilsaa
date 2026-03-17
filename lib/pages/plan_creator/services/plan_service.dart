@@ -31,18 +31,15 @@ class PlanService {
 
     final planEntity = Plan()
       ..name = plan.name.text
-      ..description = plan.note ?? ''
+      ..note = plan.note ?? ''
       ..date = dateTime
-      ..label = plan.label
-      ..colorValue = color.toARGB32()
+      ..color = color
       ..interval = plan.interval
-      ..intervalHour = plan.intervalHour
       ..note = plan.note
       ..status = PlanStatus.create
       ..finishDate = []
-      ..createTime = DateTime.now();
-
-    // 3. 执行数据库操作（写入 Isar）
+      ..alertTimes = (plan.extendParams?['times'] ?? []) as List<TimeOfDay>
+      ..createTime = DateTime.now(); // 3. 执行数据库操作（写入 Isar）
     final isar = IsarService.instance; // 局部变量
     await isar.writeTxn(() async {
       await isar.plans.put(planEntity);

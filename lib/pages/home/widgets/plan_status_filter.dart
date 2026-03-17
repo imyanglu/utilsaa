@@ -3,10 +3,10 @@ import 'package:plan/common/models/common_enum.dart';
 import 'package:plan/common/models/plan_type.dart';
 
 enum PlanFilterOption {
-  all("全部", null),
+  // all("全部", null),
   create("活跃", PlanStatus.create),
-  completed("完成", PlanStatus.completed),
-  archived("废弃", PlanStatus.archived);
+  completed("完成", PlanStatus.completed);
+  // archived("废弃", PlanStatus.archived);
 
   final String label;
   final PlanStatus? status;

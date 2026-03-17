@@ -9,7 +9,7 @@ class PlanCreatorPage extends HookWidget {
     // TODO: implement build
     return Scaffold(
       body: Container(
-        color: Colors.white,
+        color: Color(0x60ffffff),
         child: SafeArea(
           child: Column(
             children: [
@@ -23,7 +23,7 @@ class PlanCreatorPage extends HookWidget {
                     style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                   ),
                   SizedBox(width: 16),
-                  Text("清晰规划每一天", style: TextStyle(color: Color(0xff95A6BC))),
+                  Text("清晰规划每一天", style: TextStyle(color: Colors.white)),
                 ],
               ),
               PlanForm(),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 class _WeekdayCell extends StatelessWidget {
   final String text;
+
   const _WeekdayCell({required this.text});
 
   @override
@@ -11,7 +12,7 @@ class _WeekdayCell extends StatelessWidget {
         child: Text(
           text,
           style: const TextStyle(
-            fontSize: 12,
+            fontSize: 16,
             fontWeight: FontWeight.w700,
             color: Color(0xFF9CA3AF),
           ),
@@ -42,7 +43,6 @@ extension DateTimeExtension on DateTime {
 class WeekCard extends StatelessWidget {
   final DateTime? dateTime;
   const WeekCard({Key? key, this.dateTime}) : super(key: key);
-
   @override
   Widget build(BuildContext context) {
     final now = DateTime.now();
@@ -74,6 +74,12 @@ class WeekCard extends StatelessWidget {
               '周六',
               '周日',
             ].map((i) => _WeekdayCell(text: i)).toList(),
+          ),
+          SizedBox(height: 8),
+          Row(
+            children: days
+                .map((i) => _WeekdayCell(text: i.day.toString()))
+                .toList(),
           ),
         ],
       ),

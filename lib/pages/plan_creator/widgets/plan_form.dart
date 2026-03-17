@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:plan/common/models/common_enum.dart';
+
 import 'package:plan/common/widgets/input.dart';
 import 'package:plan/pages/plan_creator/hooks/use_plan_data.dart';
 import 'package:plan/pages/plan_creator/services/plan_service.dart';
 import 'package:plan/pages/plan_creator/widgets/color_selector.dart';
 import 'package:plan/pages/plan_creator/widgets/interval_selector.dart';
-import 'package:plan/pages/plan_creator/widgets/label_selector.dart';
+
 import 'package:plan/pages/plan_creator/widgets/plan_date_picker.dart';
 import 'package:plan/pages/plan_creator/widgets/plan_remark.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -31,7 +31,7 @@ class PlanForm extends HookWidget {
                   bottom: 0,
                 ),
                 margin: EdgeInsets.all(12),
-                color: Colors.white,
+
                 child: Form(
                   child: Column(
                     children: [
@@ -51,7 +51,6 @@ class PlanForm extends HookWidget {
                       ),
                       SizedBox(height: 8),
                       Input(controller: plan_data.name),
-
                       SizedBox(height: 12),
                       PlanDatePicker(
                         time: plan_data.time,
@@ -64,13 +63,6 @@ class PlanForm extends HookWidget {
                         },
                       ),
                       SizedBox(height: 12),
-                      LabelSelector(
-                        label: plan_data.label,
-                        onLabelChanged: (l) {
-                          updatePlan(plan_data.copyWith(label: l));
-                        },
-                      ),
-                      SizedBox(height: 12),
                       ColorSelector(
                         color: plan_data.color,
                         onColorChange: (c) {
@@ -79,22 +71,28 @@ class PlanForm extends HookWidget {
                       ),
                       SizedBox(height: 12),
                       IntervalSelector(
+                        onChangeTime: (times) {
+                          final params = plan_data.extendParams ?? {};
+                          params['times'] = times;
+                          updatePlan(plan_data.copyWith(extendParams: params));
+                        },
+                        times:
+                            plan_data.extendParams?['times']
+                                as List<TimeOfDay>?,
                         interval: plan_data.interval,
                         hour: plan_data.intervalHour,
                         onIntervalChanged: (i, d) {
                           updatePlan(
                             plan_data.copyWith(
                               interval: i,
-                              intervalHour: (i == IntervalEnum.other)
-                                  ? d
-                                  : plan_data.intervalHour,
+                              intervalHour: plan_data.intervalHour,
                             ),
                           );
                         },
                       ),
                       SizedBox(height: 12),
                       PlanRemark(remark: "", remarkTitle: ""),
-                      SizedBox(height: 160),
+                      SizedBox(height: 60),
                     ],
                   ),
                 ),

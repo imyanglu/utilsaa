@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:plan/common/models/common_enum.dart';
 import 'package:plan/common/models/label_type.dart';
-import 'package:plan/pages/plan_creator/widgets/interval_selector.dart';
 
 enum PlanCreatorKey {
   name,
@@ -23,7 +22,7 @@ class PlanCreator {
   final IntervalEnum interval;
   final String? note;
   final double intervalHour;
-
+  final Map<String, dynamic>? extendParams;
   PlanCreator copyWith({
     TextEditingController? name,
     DateTime? date,
@@ -33,8 +32,10 @@ class PlanCreator {
     IntervalEnum? interval,
     String? note,
     double? intervalHour,
+    Map<String, dynamic>? extendParams,
   }) {
     return PlanCreator(
+      extendParams: extendParams ?? this.extendParams,
       name: name ?? this.name,
       date: date ?? this.date,
       time: time ?? this.time,
@@ -55,5 +56,6 @@ class PlanCreator {
     required this.interval,
     required this.intervalHour,
     this.note,
+    this.extendParams,
   });
 }

@@ -13,10 +13,11 @@ class PlanDatePicker extends HookWidget {
     required this.time,
     this.onTimeChanged,
   });
+
   @override
   Widget build(BuildContext context) {
     final isLoading = useState(false);
-    // TODO: implement build
+
     return Row(
       children: [
         Expanded(
@@ -27,7 +28,7 @@ class PlanDatePicker extends HookWidget {
                   Text("📅", style: TextStyle(fontSize: 16)),
                   SizedBox(width: 4),
                   Text(
-                    "日期",
+                    "启动日期",
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -114,6 +115,7 @@ class PlanDatePicker extends HookWidget {
                   isLoading.value = true;
                   try {
                     final time = await showTimePicker(
+                      initialEntryMode: TimePickerEntryMode.input,
                       context: context,
                       initialTime: TimeOfDay.now(),
                     );

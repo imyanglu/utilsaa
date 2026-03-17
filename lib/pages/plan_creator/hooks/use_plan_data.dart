@@ -9,10 +9,13 @@ usePlanForm() {
   final planData = useState(
     PlanCreator(
       name: useTextEditingController(),
-      time: TimeOfDay(hour: 6, minute: 0),
+      time: TimeOfDay(hour: 8, minute: 0),
       label: PlanLabel.personal,
       interval: IntervalEnum.none,
       intervalHour: 8,
+      extendParams: {
+        'times': [TimeOfDay(hour: 8, minute: 0)],
+      },
     ),
   );
   // 定义 update 方法
