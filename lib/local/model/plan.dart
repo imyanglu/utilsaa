@@ -17,7 +17,7 @@ class Plan {
   @enumerated
   @Index()
   late IntervalEnum interval; //重复类型
-  List<int>? alertTimeMinutes; //提醒时间
+  late int count; //每日完成次数
   late String? note; //备注
   @enumerated
   @Index()
@@ -28,22 +28,6 @@ class Plan {
   Color get color => Color(colorValue);
   @ignore
   set color(Color color) => colorValue = color.toARGB32();
-  set alertTimes(List<TimeOfDay> times) {
-    alertTimeMinutes = times.map((t) => t.hour * 60 + t.minute).toList();
-  }
-
-  /// 将存储的分钟数转换为 UI 可用的 TimeOfDay 列表
-  @ignore
-  List<TimeOfDay>? get alertTimes {
-    return alertTimeMinutes
-        ?.map((m) => TimeOfDay(hour: m ~/ 60, minute: m % 60))
-        .toList();
-  }
-
-  /// 更新提醒时间
-  void updateAlertTimes(List<TimeOfDay> times) {
-    alertTimeMinutes = times.map((t) => t.hour * 60 + t.minute).toList();
-  }
 
   /// 快捷判断今日是否已完成
   bool isFinishedToday() {

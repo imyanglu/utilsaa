@@ -22,7 +22,7 @@ class PlanCreator {
   final IntervalEnum interval;
   final String? note;
   final double intervalHour;
-  final Map<String, dynamic>? extendParams;
+  final int count;
   PlanCreator copyWith({
     TextEditingController? name,
     DateTime? date,
@@ -32,10 +32,10 @@ class PlanCreator {
     IntervalEnum? interval,
     String? note,
     double? intervalHour,
-    Map<String, dynamic>? extendParams,
+    int? count,
   }) {
     return PlanCreator(
-      extendParams: extendParams ?? this.extendParams,
+      count: count ?? this.count,
       name: name ?? this.name,
       date: date ?? this.date,
       time: time ?? this.time,
@@ -56,6 +56,6 @@ class PlanCreator {
     required this.interval,
     required this.intervalHour,
     this.note,
-    this.extendParams,
+    this.count = 1,
   });
 }

@@ -5,6 +5,7 @@ import 'package:plan/common/models/selector.dart';
 enum PlanStatus {
   create("活跃", Color(0xFFFF6B35), Color(0xFFFFF0EB)),
   archived("废弃", Color(0xFF8B8FA8), Color(0xFFF0F1F5)), // 灰
+  partial("部分完成", Color(0xFF007AFF), Color(0xFFE5F2FF)), // 经典蓝
   completed("完成", Color(0xFF00C48C), Color(0xFFE0FAF3)); // 绿
 
   final String label;

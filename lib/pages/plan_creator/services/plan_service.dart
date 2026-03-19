@@ -38,7 +38,7 @@ class PlanService {
       ..note = plan.note
       ..status = PlanStatus.create
       ..finishDate = []
-      ..alertTimes = (plan.extendParams?['times'] ?? []) as List<TimeOfDay>
+      ..count = plan.count
       ..createTime = DateTime.now(); // 3. 执行数据库操作（写入 Isar）
     final isar = IsarService.instance; // 局部变量
     await isar.writeTxn(() async {

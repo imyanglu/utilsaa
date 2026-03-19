@@ -87,7 +87,7 @@ class HomePage extends HookWidget {
                   const SizedBox(width: 8),
                   const Expanded(
                     child: Text(
-                      '今日计划',
+                      '近期计划',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w800,

@@ -13,9 +13,7 @@ usePlanForm() {
       label: PlanLabel.personal,
       interval: IntervalEnum.none,
       intervalHour: 8,
-      extendParams: {
-        'times': [TimeOfDay(hour: 8, minute: 0)],
-      },
+      count: 1,
     ),
   );
   // 定义 update 方法

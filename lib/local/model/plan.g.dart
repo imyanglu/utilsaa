@@ -17,14 +17,14 @@ const PlanSchema = CollectionSchema(
   name: r'Plan',
   id: 8143067535675439181,
   properties: {
-    r'alertTimeMinutes': PropertySchema(
-      id: 0,
-      name: r'alertTimeMinutes',
-      type: IsarType.longList,
-    ),
     r'colorValue': PropertySchema(
-      id: 1,
+      id: 0,
       name: r'colorValue',
+      type: IsarType.long,
+    ),
+    r'count': PropertySchema(
+      id: 1,
+      name: r'count',
       type: IsarType.long,
     ),
     r'createTime': PropertySchema(
@@ -139,12 +139,6 @@ int _planEstimateSize(
 ) {
   var bytesCount = offsets.last;
   {
-    final value = object.alertTimeMinutes;
-    if (value != null) {
-      bytesCount += 3 + value.length * 8;
-    }
-  }
-  {
     final value = object.finishDate;
     if (value != null) {
       bytesCount += 3 + value.length * 8;
@@ -166,8 +160,8 @@ void _planSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLongList(offsets[0], object.alertTimeMinutes);
-  writer.writeLong(offsets[1], object.colorValue);
+  writer.writeLong(offsets[0], object.colorValue);
+  writer.writeLong(offsets[1], object.count);
   writer.writeDateTime(offsets[2], object.createTime);
   writer.writeDateTime(offsets[3], object.date);
   writer.writeDateTimeList(offsets[4], object.finishDate);
@@ -184,8 +178,8 @@ Plan _planDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = Plan();
-  object.alertTimeMinutes = reader.readLongList(offsets[0]);
-  object.colorValue = reader.readLong(offsets[1]);
+  object.colorValue = reader.readLong(offsets[0]);
+  object.count = reader.readLong(offsets[1]);
   object.createTime = reader.readDateTime(offsets[2]);
   object.date = reader.readDateTime(offsets[3]);
   object.finishDate = reader.readDateTimeList(offsets[4]);
@@ -208,7 +202,7 @@ P _planDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLongList(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
@@ -235,20 +229,26 @@ P _planDeserializeProp<P>(
 const _PlanintervalEnumValueMap = {
   'none': 0,
   'daily': 1,
+  'monthly': 2,
+  'yearly': 3,
 };
 const _PlanintervalValueEnumMap = {
   0: IntervalEnum.none,
   1: IntervalEnum.daily,
+  2: IntervalEnum.monthly,
+  3: IntervalEnum.yearly,
 };
 const _PlanstatusEnumValueMap = {
   'create': 0,
   'archived': 1,
-  'completed': 2,
+  'partial': 2,
+  'completed': 3,
 };
 const _PlanstatusValueEnumMap = {
   0: PlanStatus.create,
   1: PlanStatus.archived,
-  2: PlanStatus.completed,
+  2: PlanStatus.partial,
+  3: PlanStatus.completed,
 };
 
 Id _planGetId(Plan object) {
@@ -772,164 +772,6 @@ extension PlanQueryWhere on QueryBuilder<Plan, Plan, QWhereClause> {
 }
 
 extension PlanQueryFilter on QueryBuilder<Plan, Plan, QFilterCondition> {
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNull(
-        property: r'alertTimeMinutes',
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNotNull() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const FilterCondition.isNotNull(
-        property: r'alertTimeMinutes',
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesElementEqualTo(int value) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.equalTo(
-        property: r'alertTimeMinutes',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesElementGreaterThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.greaterThan(
-        include: include,
-        property: r'alertTimeMinutes',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesElementLessThan(
-    int value, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.lessThan(
-        include: include,
-        property: r'alertTimeMinutes',
-        value: value,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesElementBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(FilterCondition.between(
-        property: r'alertTimeMinutes',
-        lower: lower,
-        includeLower: includeLower,
-        upper: upper,
-        includeUpper: includeUpper,
-      ));
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesLengthEqualTo(
-      int length) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        length,
-        true,
-        length,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        0,
-        true,
-        0,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesIsNotEmpty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        0,
-        false,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesLengthLessThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        0,
-        true,
-        length,
-        include,
-      );
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition>
-      alertTimeMinutesLengthGreaterThan(
-    int length, {
-    bool include = false,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        length,
-        include,
-        999999,
-        true,
-      );
-    });
-  }
-
-  QueryBuilder<Plan, Plan, QAfterFilterCondition> alertTimeMinutesLengthBetween(
-    int lower,
-    int upper, {
-    bool includeLower = true,
-    bool includeUpper = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.listLength(
-        r'alertTimeMinutes',
-        lower,
-        includeLower,
-        upper,
-        includeUpper,
-      );
-    });
-  }
-
   QueryBuilder<Plan, Plan, QAfterFilterCondition> colorValueEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
@@ -974,6 +816,58 @@ extension PlanQueryFilter on QueryBuilder<Plan, Plan, QFilterCondition> {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'colorValue',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> countEqualTo(int value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'count',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> countGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'count',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> countLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'count',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterFilterCondition> countBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'count',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -1688,6 +1582,18 @@ extension PlanQuerySortBy on QueryBuilder<Plan, Plan, QSortBy> {
     });
   }
 
+  QueryBuilder<Plan, Plan, QAfterSortBy> sortByCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'count', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterSortBy> sortByCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'count', Sort.desc);
+    });
+  }
+
   QueryBuilder<Plan, Plan, QAfterSortBy> sortByCreateTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'createTime', Sort.asc);
@@ -1771,6 +1677,18 @@ extension PlanQuerySortThenBy on QueryBuilder<Plan, Plan, QSortThenBy> {
   QueryBuilder<Plan, Plan, QAfterSortBy> thenByColorValueDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'colorValue', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterSortBy> thenByCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'count', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QAfterSortBy> thenByCountDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'count', Sort.desc);
     });
   }
 
@@ -1860,15 +1778,15 @@ extension PlanQuerySortThenBy on QueryBuilder<Plan, Plan, QSortThenBy> {
 }
 
 extension PlanQueryWhereDistinct on QueryBuilder<Plan, Plan, QDistinct> {
-  QueryBuilder<Plan, Plan, QDistinct> distinctByAlertTimeMinutes() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(r'alertTimeMinutes');
-    });
-  }
-
   QueryBuilder<Plan, Plan, QDistinct> distinctByColorValue() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'colorValue');
+    });
+  }
+
+  QueryBuilder<Plan, Plan, QDistinct> distinctByCount() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'count');
     });
   }
 
@@ -1924,15 +1842,15 @@ extension PlanQueryProperty on QueryBuilder<Plan, Plan, QQueryProperty> {
     });
   }
 
-  QueryBuilder<Plan, List<int>?, QQueryOperations> alertTimeMinutesProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addPropertyName(r'alertTimeMinutes');
-    });
-  }
-
   QueryBuilder<Plan, int, QQueryOperations> colorValueProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'colorValue');
+    });
+  }
+
+  QueryBuilder<Plan, int, QQueryOperations> countProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'count');
     });
   }
 

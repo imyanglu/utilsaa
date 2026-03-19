@@ -71,14 +71,10 @@ class PlanForm extends HookWidget {
                       ),
                       SizedBox(height: 12),
                       IntervalSelector(
-                        onChangeTime: (times) {
-                          final params = plan_data.extendParams ?? {};
-                          params['times'] = times;
-                          updatePlan(plan_data.copyWith(extendParams: params));
+                        onChangeTimes: (times) {
+                          updatePlan(plan_data.copyWith(count: times));
                         },
-                        times:
-                            plan_data.extendParams?['times']
-                                as List<TimeOfDay>?,
+                        times: plan_data.count,
                         interval: plan_data.interval,
                         hour: plan_data.intervalHour,
                         onIntervalChanged: (i, d) {

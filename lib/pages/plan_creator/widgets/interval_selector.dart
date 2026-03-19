@@ -1,30 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:plan/common/models/common_enum.dart';
-import 'package:plan/pages/plan_creator/widgets/time_selector.dart';
 
 class IntervalSelector extends HookWidget {
   final IntervalEnum interval;
-  final List<TimeOfDay>? times;
+  final int times;
   final double? hour;
   final void Function(IntervalEnum, double?) onIntervalChanged;
-  final void Function(List<TimeOfDay> times) onChangeTime;
+  final void Function(int times) onChangeTimes;
   IntervalSelector({
     Key? key,
     required this.interval,
     required this.onIntervalChanged,
     required this.hour,
-    this.times,
-    required this.onChangeTime,
+    required this.times,
+    required this.onChangeTimes,
   }) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    final controller = useTextEditingController();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start, // 强制
       children: [
         Row(
           children: [
-            Text("🔄", style: TextStyle(fontSize: 16)),
+            Icon(Icons.repeat, size: 22, color: Color(0xffC2E7FF)),
+
             SizedBox(width: 4),
             Text(
               "重复",
@@ -40,12 +41,46 @@ class IntervalSelector extends HookWidget {
 
         Wrap(
           spacing: 8,
+          runSpacing: 4,
           alignment: WrapAlignment.start,
           children: IntervalEnum.values.map((l) {
             bool isSelected = interval == l;
             return GestureDetector(
               onTap: () {
                 onIntervalChanged(l, null);
+                if (l != IntervalEnum.none) {
+                  showDialog(
+                    context: context,
+                    builder: (context) => Dialog(
+                      backgroundColor: Color(0xffffffff),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min, // 高度自适应
+                          children: [
+                            TextField(controller: controller),
+                            SizedBox(height: 20),
+                            Row(
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('关闭'),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('保存'),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
               },
               child: AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
@@ -74,25 +109,6 @@ class IntervalSelector extends HookWidget {
               ),
             );
           }).toList(),
-        ),
-        AnimatedContainer(
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInOut, // 加上曲线更平滑
-          // 使用 clipBehavior 保证高度缩小时，内部组件不会超出边界
-          constraints: BoxConstraints(
-            minHeight: interval == IntervalEnum.daily ? 100 : 0,
-          ),
-          // decoration: BoxDecoration(
-          //   color: Color(0xffF8FAFD),
-          //   border: BoxBorder.all(color: Color(0xffF2F5F9)),
-          //   borderRadius: BorderRadius.circular(16),
-          // ),
-          child: TimeSelector(
-            onChangeTime: onChangeTime,
-            timeSelectorType: TimeSelectorType.time,
-
-            times: IntervalEnum.daily == interval ? times ?? [] : null,
-          ),
         ),
       ],
     );
